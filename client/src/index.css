@@ -3,6 +3,56 @@
 @tailwind utilities;
 
 
+.bigplus:before {
+  content: '\FF0B';
+}
+.chatbar-item {
+  display: flex;
+  position: relative;
+  align-items: center;
+  justify-content: center;
+  height: 44px;
+  width: 44px;
+  border-radius: 9999px;
+  border: none;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  color: inherit;
+  overflow: hidden;
+}
+.chatbar-item:hover {
+  background: #747474;}
+.chatbar-item:focus {
+  outline: none;
+}
+
+.tooltip-wrapper {
+  position: relative;
+  overflow: visible; /* important! */
+}
+
+.tooltip-wrapper[data-tooltip]::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: #1e1e1e;
+  color: white;
+  padding: 6px 10px;
+  font-size: 12px;
+  border-radius: 6px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s ease-out, transform 0.15s ease-out;
+}
+
+.tooltip-wrapper[data-tooltip]:hover::after {
+  opacity: 1;
+  transform: translateX(-50%) translateY(4px);
+}
 .sidebar-item {
   border-radius: 0.5rem;
   box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);

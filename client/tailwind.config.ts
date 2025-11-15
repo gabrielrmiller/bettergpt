@@ -12,7 +12,7 @@ export default {
         'chatbar-bg': '#454545',
         'tooltip-bg': '#2c2c2c',
         'sidebar-hover': '#303030',
-        'hover-icon': '#5a5a6a',
+        'chatbar-hover': '#747474',
       }
     },
   },
