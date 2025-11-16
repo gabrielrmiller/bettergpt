@@ -8,9 +8,8 @@
       "destination": "/api/$1"
     },
     {
-      "source": "/((?!assets|.*\\.(js|css|png|svg|jpg|jpeg|gif|ico|woff|woff2|ttf|eot)).*)",
+      "source": "/((?!assets|.*\\.(js|css|png|svg|jpg|jpeg|gif|ico|woff|woff2|ttf|eot|webp)).*)",
       "destination": "/index.html"
     }
   ]
 }
-
