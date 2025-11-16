@@ -51,7 +51,7 @@ function App() {
           <textarea ref={textareaRef} value={text} onChange={(e) => setText(e.target.value)} className='outline-none overflow-y-auto w-full align-top 
           text-left flex pt-[14px] overflow-hidden pl-[18px] pr-[14px] h-[62px] max-h-[92] box-border bg-transparent resize-none text-white placeholder:tracking-wider' 
           placeholder='Ask anything'></textarea>
-          <div className='flex w-full relative min-h-[58px] box-border p-2 justify-between '>
+          <div className='border-t-[1px] border-[#747474] flex w-full relative min-h-[58px] box-border p-2 justify-between '>
           
           <div className="tooltip-wrapper" data-tooltip="Attach or add files"><button className='chatbar-item text-5xl bigplus'></button></div>
           <div className="tooltip-wrapper" data-tooltip="Submit"><button className='chatbar-item text-3xl'>⬆️</button></div>
