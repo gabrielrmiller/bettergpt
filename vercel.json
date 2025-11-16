@@ -2,14 +2,12 @@
   "buildCommand": "npm run build",
   "outputDirectory": ".",
   "devCommand": "npm run dev",
+  "cleanUrls": true,
+  "trailingSlash": false,
   "rewrites": [
     {
       "source": "/api/(.*)",
       "destination": "/api/$1"
-    },
-    {
-      "source": "/((?!assets|.*\\.(js|css|png|svg|jpg|jpeg|gif|ico|woff|woff2|ttf|eot|webp)).*)",
-      "destination": "/index.html"
     }
   ]
 }
