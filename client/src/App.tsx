@@ -1,6 +1,5 @@
-import { clear } from 'console';
 import './App.css'
-import { use, useEffectEvent, useRef, useState, useEffect } from 'react'
+import { useRef, useState, useEffect } from 'react'
 
 function App() {
   const [isCollapsed, switchy] = useState(false);
@@ -26,12 +25,12 @@ function App() {
       ${isCollapsed ? 'w-[52px] bg-main' : 'w-[260px] bg-sidebar-bg'} z-0`}>
         <div className='flex mt-1 ml-1 justify-center items-center w-11 h-11 rounded-lg hover:bg-sidebar-hover' 
         onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)} onClick={isCollapsed ? toggleSidebar : undefined/* go to main menu*/}>
-          <img src={isCollapsed && hovered ? 'maximizer.png' : 'logo.png'} className={`${isCollapsed && hovered ? 'h-6 w-6' : 'h-10 w-10'}`}></img>
+          <img src={isCollapsed && hovered ? `${import.meta.env.BASE_URL}maximizer.png` : `${import.meta.env.BASE_URL}logo.png`} className={`${isCollapsed && hovered ? 'h-6 w-6' : 'h-10 w-10'}`}></img>
         </div>
         {isCollapsed ? null :
         <div className={`z-10 fixed top-1.5 left-52 h-10 w-10 rounded-lg hover:bg-sidebar-hover`} onClick={toggleSidebar}>
           {isCollapsed ? null :
-        <img src='minimizer.png' className='block h-6 w-6 mx-auto my-2 object-contain'></img>}</div>}
+        <img src={`${import.meta.env.BASE_URL}minimizer.png`} className='block h-6 w-6 mx-auto my-2 object-contain'></img>}</div>}
         <div className={` place-items-center transition-colors 0.2s ease-in-out grid grid-cols-1 ${isCollapsed ? 'text-main-bg' : 'text-white'}`}>
           <div className={`rounded-lg p-2 ${isCollapsed ? 'w-[80%]' : 'w-[95%]'} h-10 hover:bg-sidebar-hover`}>
             <span className={`left-4 text-xl before:mr-4 before:content-['🗒️'] fixed font-semibold text-[14px]`}>New chat</span>

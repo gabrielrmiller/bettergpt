@@ -1,0 +1,10 @@
+# Dependencies
+node_modules/
+client/node_modules/
+
+# Build output (source files, not the deployed root files)
+client/dist/
+
+# OS files
+.DS_Store
+
