@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "cd client && npm run dev",
-    "build": "cd client && npm install && npm run build && cd .. && test -d client/dist && echo 'Build output verified: client/dist exists'",
+    "build": "(cd client && npm install && npm run build) && pwd && ls -la client/dist && echo '✓ client/dist directory exists'",
     "deploy:github": "cd client && VITE_BASE_PATH='/bettergpt/' npm run build && cd .. && npm run copy-to-root",
     "copy-to-root": "cp -r client/dist/* . && cp client/dist/404.html ./404.html"
   }
