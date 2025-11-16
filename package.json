@@ -1,0 +1,15 @@
+{
+  "name": "bettergpt",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "cd client && npm run dev",
+    "build": "cd client && npm run build",
+    "deploy:github": "cd client && VITE_BASE_PATH='/bettergpt/' npm run build && cd .. && npm run copy-to-root",
+    "copy-to-root": "cp -r client/dist/* . && cp client/dist/404.html ./404.html"
+  },
+  "devDependencies": {
+    "@vercel/node": "^3.0.0"
+  }
+}
+
