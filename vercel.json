@@ -2,12 +2,14 @@
   "buildCommand": "npm run build",
   "outputDirectory": ".",
   "devCommand": "npm run dev",
-  "cleanUrls": true,
-  "trailingSlash": false,
   "rewrites": [
     {
       "source": "/api/(.*)",
       "destination": "/api/$1"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
     }
   ]
 }
