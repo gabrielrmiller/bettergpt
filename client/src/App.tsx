@@ -13,14 +13,16 @@ const MESSAGE_BANK = [
 ];
 
 function App() {
-  const [isCollapsed, switchy] = useState(false);
+  const [reply, setReply] = useState(""); // chatgpt response
+  const [loading, setLoading] = useState(false); // is the response loading or not
+  const [isCollapsed, switchy] = useState(false); // Is sidebar collapsed or not
   const toggleSidebar = () => {
     switchy(!isCollapsed);};
-  const [hovered, setHovered] =useState(false);
-  const [text, setText] =useState("");
-  const [currentMessageIndex, setCurrentMessageIndex] = useState(0);
+  const [hovered, setHovered] =useState(false); // is the logo being hovered
+  const [text, setText] =useState(""); // text to submit to api
+  const [currentMessageIndex, setCurrentMessageIndex] = useState(0); // message index for greeting
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const ran =useRef(false);
+  const ran =useRef(false); //only one message load on mount
   
   useEffect(() => {
     if (ran.current) return;
@@ -40,10 +42,27 @@ function App() {
       textarea.style.height = Math.min(textarea.scrollHeight, maxHeight) + "px";}
 
   }, [text]);  
-  const handleSubmit = () => {
-    if (text.trim()) {
-      console.log('Submitting:', text);
-      setText('');
+  const handleSubmit = async () => {
+    if (!text.trim()) return; // Ignore empty input.
+    const userInput = text; // Save current text to a variable.
+    setText(""); // Clear textarea.
+    setLoading(true); // Set loading indicator for AI response.
+
+    try {
+      const res = await fetch("/api/generate", {
+        method: "POST", // POST request since we’re sending data.
+        headers: { "Content-Type": "application/json" }, // Tell server we’re sending JSON.
+        body: JSON.stringify({ input: userInput }), // Send user input to backend.
+      });
+
+      const data = await res.json(); // Parse JSON response.
+      if (data.reply) {
+        setReply(data.reply); // Store AI response in state.
+      }
+    } catch (err) {
+      console.error("Error calling OpenAI API:", err); // Log any errors.
+    } finally {
+      setLoading(false); // Turn off loading indicator.
     }
   };
 
@@ -84,6 +103,7 @@ function App() {
       </div>
       <div className='flex flex-col flex-grow min-h-full bg-main-bg z-20 justify-center items-center gap-10 box-border'>
         <div className='text-white text-xs w-[90%] relative p-2 m-0 select-text text-center'><h1>{MESSAGE_BANK[currentMessageIndex]}</h1></div>
+        {loading ? ( <p className='text-gray-300'>Thinking...</p>) : reply ? ( <div className='text-green-400 w-[90%] text-center'> <p>{reply}</p></div>) : null}
 
         <div className='items-start border-[#747474] border-[1px] flex flex-col w-[95%] relative h-auto bg-sidebar-hover rounded-3xl box-border shadow-xl max-w-2xl'>
           <textarea ref={textareaRef} value={text} onChange={(e) => setText(e.target.value)} onKeyDown={handleKeyDown} className='outline-none overflow-y-auto w-full align-top 

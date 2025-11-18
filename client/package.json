@@ -16,6 +16,7 @@
     "copy-to-root": "cp -r dist/* ../ && cp dist/404.html ../404.html"
   },
   "dependencies": {
+    "openai": "^6.9.1",
     "react": "^19.2.0",
     "react-dom": "^19.2.0"
   },
