@@ -13,6 +13,6 @@ export default async function handler(req, res) {
   });
 
   return res.status(200).json({
-    reply: response.output[0].content[0].text,
+    reply: response.output[0].content[0].text, 
   });
 }

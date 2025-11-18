@@ -1,5 +1,6 @@
 import './App.css'
 import { useRef, useState, useEffect } from 'react'
+import type { VercelRequest, VercelResponse } from '@vercel/node';
 
 const MESSAGE_BANK = [
   "What do you want to work on today?",
