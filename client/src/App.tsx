@@ -50,7 +50,7 @@ function App() {
     setLoading(true); // Set loading indicator for AI response.
 
     try {
-      const res = await fetch("/api/generate", {
+      const res = await fetch("/api/chat", {
         method: "POST", // POST request since we’re sending data.
         headers: { "Content-Type": "application/json" }, // Tell server we’re sending JSON.
         body: JSON.stringify({ input: userInput }), // Send user input to backend.
