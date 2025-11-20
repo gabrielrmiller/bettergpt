@@ -11,8 +11,15 @@ export default async function handler(req, res) {
     input: input,
     store: true,
   });
+  let reply = "";
+
+  const first = response.output?.[0];
+  if (first?.type === "message") {
+    const textPart = first.content.find(c => c.type === "output_text");
+    reply = textPart?.text ?? "";
+  }
 
   return res.status(200).json({
-    reply: response.output[0].content[0].text, 
+    reply: reply, 
   });
 }
