@@ -14,6 +14,7 @@ const MESSAGE_BANK = [
 ];
 
 function App() {
+  const host = window.location.host; 
   const [reply, setReply] = useState(""); // chatgpt response
   const [loading, setLoading] = useState(false); // is the response loading or not
   const [isCollapsed, switchy] = useState(false); // Is sidebar collapsed or not
@@ -109,7 +110,7 @@ function App() {
         <div className='items-start border-[#747474] border-[1px] flex flex-col w-[95%] relative h-auto bg-sidebar-hover rounded-3xl box-border shadow-xl max-w-2xl'>
           <textarea ref={textareaRef} value={text} onChange={(e) => setText(e.target.value)} onKeyDown={handleKeyDown} className='outline-none overflow-y-auto w-full align-top 
           text-left flex pt-[14px] overflow-hidden pl-[18px] pr-[14px] h-[62px] max-h-[92] box-border bg-transparent resize-none text-white placeholder:tracking-wider' 
-          placeholder='Ask anything'></textarea>
+          placeholder={`${host.includes('github.io') ? 'go to "bettergpt-lake.vercel.app"' : "Ask anything"}`}></textarea>
           <div className='border-t-[1px] border-[#747474] flex w-full relative min-h-[58px] box-border p-2 justify-between '>
           
           <div className="tooltip-wrapper" data-tooltip="Attach or add files"><button className='chatbar-item text-5xl bigplus'></button></div>
