@@ -1,6 +1,7 @@
 import OpenAI from "openai";
+import type { VercelRequest, VercelResponse } from '@vercel/node';
 
-export default async function handler(req, res) {
+export default async function handler(req: VercelRequest, res: VercelResponse) {
   const { input } = req.body;
   const client = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY,
@@ -15,7 +16,7 @@ export default async function handler(req, res) {
 
   const first = response.output?.[0];
   if (first?.type === "message") {
-    const textPart = first.content.find(c => c.type === "output_text");
+    const textPart = first.content.find((c) => c.type === "output_text");
     reply = textPart?.text ?? "";
   }
 
