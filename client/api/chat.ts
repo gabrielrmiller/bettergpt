@@ -15,10 +15,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   let reply = "";
 
   const first = response.output?.[0];
+
   if (first?.type === "message") {
-    const textPart = first.content.find((c) => c.type === "output_text");
-    reply = textPart?.text ?? "";
+    const part = first.content.find((c) => c.type === "output_text");
+    if (part && part.type === "output_text") {
+      reply = part.text;
   }
+}
 
   return res.status(200).json({
     reply: reply, 
