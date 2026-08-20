@@ -1,0 +1,6 @@
+{
+  "rewrites": [
+    { "source": "/when", "destination": "/when.html" },
+    { "source": "/when/", "destination": "/when.html" }
+  ]
+}

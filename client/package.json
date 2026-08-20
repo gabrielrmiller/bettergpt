@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "vite build && cp dist/index.html dist/404.html",
     "build:404": "cp dist/index.html dist/404.html",
-    "build:github": "cross-env VITE_BASE_BATH=/bettergpt/ vite build",
+    "build:github": "cross-env VITE_GH_PAGES=true VITE_BASE_BATH=/bettergpt/ vite build",
     "postbuild": "rm -rf docs && cp -r dist docs",
     "lint": "eslint .",
     "preview": "vite preview",
@@ -16,6 +16,7 @@
     "copy-to-root": "cp -r dist/* ../ && cp dist/404.html ../404.html"
   },
   "dependencies": {
+    "@upstash/redis": "^1.38.2",
     "openai": "^6.9.1",
     "react": "^19.2.0",
     "react-dom": "^19.2.0"

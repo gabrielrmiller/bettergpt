@@ -101,10 +101,14 @@ function App() {
           <div className={`rounded-lg p-2 ${isCollapsed ? 'w-[80%]' : 'w-[95%]'} h-10 hover:bg-sidebar-hover`}>
             <span className={`left-4 text-xl before:mr-4 before:content-['📚'] fixed font-semibold text-[14px]`}>Library</span>
           </div>
+          <a href="/when" className={`when-free-link rounded-lg p-2 ${isCollapsed ? 'w-[80%]' : 'w-[95%]'} h-10 hover:bg-sidebar-hover`}>
+            <span className={`left-4 text-xl before:mr-4 before:content-['📅'] fixed font-semibold text-[14px]`}>When we're free</span>
+          </a>
         </div>
       </div>
       <div className='flex flex-col flex-grow min-h-full bg-main-bg z-20 justify-center items-center gap-10 box-border'>
         <div className='text-white text-xs w-[90%] relative p-2 m-0 select-text text-center'><h1>{MESSAGE_BANK[currentMessageIndex]}</h1></div>
+        <a className="when-free-link text-sm text-[#c5c5c5] hover:text-white font-semibold md:hidden" href="/when">When we're free</a>
         {loading ? ( <p className='text-gray-300'>Thinking...</p>) : reply ? ( <div className='text-green-400 w-[90%] text-center'> <p>{reply}</p></div>) : null}
 
         <div className='items-start border-[#747474] border-[1px] flex flex-col w-[95%] relative h-auto bg-sidebar-hover rounded-3xl box-border shadow-xl max-w-2xl'>
