@@ -4,7 +4,6 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const CATEGORIES = new Set(["study", "practice"]);
-const MIN_KEY_LENGTH = 16;
 const MAX_KEY_LENGTH = 128;
 const MAX_MS = 10 * 365 * 24 * 60 * 60 * 1000;
 const RATE_LIMIT = 40;
@@ -25,8 +24,7 @@ export function normalizeCategory(value) {
 
 export function normalizeKey(value) {
   const key = String(value || "").trim();
-  if (key.length < MIN_KEY_LENGTH || key.length > MAX_KEY_LENGTH) return null;
-  if (!/^[A-Za-z0-9_-]+$/.test(key)) return null;
+  if (!key || key.length > MAX_KEY_LENGTH) return null;
   return key;
 }
 
@@ -163,10 +161,7 @@ export async function handleTimer(body) {
   const key = normalizeKey(body?.key);
   if (!category) fail(400, "Unknown timer.");
   if (!key) {
-    fail(
-      400,
-      "Use a 16–128 character key with letters, numbers, dashes, or underscores.",
-    );
+    fail(400, "Enter a key.");
   }
 
   if (action === "get") return readTimer(category, key);

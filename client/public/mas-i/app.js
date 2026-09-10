@@ -208,7 +208,7 @@
 
   function validKey(value) {
     const key = String(value || "").trim();
-    return key.length >= 16 && key.length <= 128 && /^[A-Za-z0-9_-]+$/.test(key) ? key : "";
+    return key.length > 0 && key.length <= 128 ? key : "";
   }
 
   function setSyncStatus(category, message) {
@@ -264,7 +264,7 @@
   async function linkKey(category, rawKey) {
     const key = validKey(rawKey);
     if (!key) {
-      throw new Error("Use 16–128 characters: letters, numbers, dashes, or underscores.");
+      throw new Error("Enter a key first.");
     }
 
     const previous = keys[category];
