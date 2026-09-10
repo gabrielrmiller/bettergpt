@@ -3,7 +3,6 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-const CATEGORIES = new Set(["study", "practice"]);
 const MAX_KEY_LENGTH = 128;
 const MAX_MS = 10 * 365 * 24 * 60 * 60 * 1000;
 const RATE_LIMIT = 40;
@@ -17,11 +16,6 @@ const dataFile = path.join(
   "timers.json",
 );
 
-export function normalizeCategory(value) {
-  const category = String(value || "").trim().toLowerCase();
-  return CATEGORIES.has(category) ? category : null;
-}
-
 export function normalizeKey(value) {
   const key = String(value || "").trim();
   if (!key || key.length > MAX_KEY_LENGTH) return null;
@@ -34,11 +28,17 @@ export function normalizeMs(value) {
   return Math.floor(ms);
 }
 
-export function recordKey(category, key) {
-  const digest = createHash("sha256")
-    .update(`mas-i-timer:v1:${category}:${key}`)
-    .digest("hex");
-  return `mas-i-timer:${category}:${digest}`;
+export function normalizeAccumulated(value) {
+  if (!value || typeof value !== "object") return { study: 0, practice: 0 };
+  return {
+    study: normalizeMs(value.study) || 0,
+    practice: normalizeMs(value.practice) || 0,
+  };
+}
+
+export function recordKey(key) {
+  const digest = createHash("sha256").update(`mas-i-timer:v2:${key}`).digest("hex");
+  return `mas-i-timer:v2:${digest}`;
 }
 
 function redisConfig() {
@@ -115,31 +115,36 @@ export async function enforceRateLimit(clientId) {
 }
 
 function normalizeRecord(value) {
-  if (!value || typeof value !== "object") return { accumulatedMs: 0, updatedAt: 0 };
+  if (!value || typeof value !== "object") {
+    return { found: false, accumulated: { study: 0, practice: 0 }, updatedAt: 0 };
+  }
   return {
-    accumulatedMs: normalizeMs(value.accumulatedMs) || 0,
+    found: true,
+    accumulated: normalizeAccumulated(value.accumulated),
     updatedAt: Number(value.updatedAt) > 0 ? Number(value.updatedAt) : 0,
   };
 }
 
-export async function readTimer(category, key) {
+export async function readTimer(key) {
   const redis = await getRedis();
-  const id = recordKey(category, key);
-  if (redis) return { found: Boolean(await redis.exists(id)), ...normalizeRecord(await redis.get(id)) };
+  const id = recordKey(key);
+  if (redis) {
+    const value = await redis.get(id);
+    return normalizeRecord(value);
+  }
 
   if (process.env.VERCEL) {
     fail(500, "Add a Redis store in the Vercel Storage tab, then redeploy, so timers can sync.");
   }
 
   const store = await readFileStore();
-  const record = store.records[id];
-  return { found: Boolean(record), ...normalizeRecord(record) };
+  return normalizeRecord(store.records[id]);
 }
 
-export async function writeTimer(category, key, accumulatedMs) {
-  const record = { accumulatedMs, updatedAt: Date.now() };
+export async function writeTimer(key, accumulated) {
+  const record = { accumulated, updatedAt: Date.now() };
   const redis = await getRedis();
-  const id = recordKey(category, key);
+  const id = recordKey(key);
   if (redis) {
     await redis.set(id, record);
     return record;
@@ -157,18 +162,13 @@ export async function writeTimer(category, key, accumulatedMs) {
 
 export async function handleTimer(body) {
   const action = String(body?.action || "").trim();
-  const category = normalizeCategory(body?.category);
   const key = normalizeKey(body?.key);
-  if (!category) fail(400, "Unknown timer.");
-  if (!key) {
-    fail(400, "Enter a key.");
-  }
+  if (!key) fail(400, "Enter a key.");
 
-  if (action === "get") return readTimer(category, key);
+  if (action === "get") return readTimer(key);
   if (action === "put") {
-    const accumulatedMs = normalizeMs(body?.accumulatedMs);
-    if (accumulatedMs == null) fail(400, "Invalid time value.");
-    return writeTimer(category, key, accumulatedMs);
+    const accumulated = normalizeAccumulated(body?.accumulated);
+    return writeTimer(key, accumulated);
   }
   fail(400, "Unknown timer action.");
 }

@@ -503,27 +503,23 @@ button {
   font-size: 0.82rem;
 }
 
-.timer__sync {
-  font-size: 0.68rem;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: color-mix(in srgb, var(--accent) 80%, var(--paper));
-  font-weight: 600;
-}
-
-.timer__sync[hidden] {
-  display: none;
-}
-
 .sync {
   display: grid;
   gap: 0.7rem;
-  padding-top: 0.15rem;
-  border-top: 1px solid var(--line);
+  max-width: 520px;
+  margin: 0 auto;
+  width: 100%;
+  padding: 0.95rem 1.1rem 1.05rem;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--line);
 }
 
-.sync[hidden] {
-  display: none;
+.sync__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
 }
 
 .sync__label {
@@ -535,11 +531,28 @@ button {
   font-weight: 500;
 }
 
+.sync__badge {
+  font-size: 0.68rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--signal);
+  font-weight: 600;
+}
+
+.sync__badge[hidden] {
+  display: none;
+}
+
 .sync__hint {
   margin: 0;
   font-size: 0.82rem;
   line-height: 1.45;
   color: var(--fog);
+}
+
+.sync__form {
+  display: grid;
+  gap: 0.7rem;
 }
 
 .sync__key {
@@ -562,7 +575,7 @@ button {
 }
 
 .sync__key input:focus {
-  border-color: color-mix(in srgb, var(--accent) 50%, transparent);
+  border-color: color-mix(in srgb, var(--signal) 50%, transparent);
 }
 
 .sync__actions {
@@ -581,13 +594,6 @@ button {
   font-size: 0.78rem;
   line-height: 1.4;
   color: var(--fog);
-}
-
-.timer:fullscreen .sync,
-.timer.is-focus .sync {
-  max-width: 420px;
-  width: 100%;
-  margin: 0 auto;
 }
 
 .btn {

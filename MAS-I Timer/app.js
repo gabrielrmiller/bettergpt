@@ -1,6 +1,7 @@
 (() => {
   const STORAGE_KEY = "mas-i-timer-v4";
-  const KEYS_STORAGE = "mas-i-timer-keys-v1";
+  const KEY_STORAGE = "mas-i-timer-key-v2";
+  const LEGACY_KEY_STORAGE = "mas-i-timer-keys-v1";
   const LEGACY_KEYS = ["mas-i-timer-v3", "exam-timer-v2", "mas-i-timer-v1"];
   const CATEGORIES = ["study", "practice"];
   const STALE_RUN_MS = 12 * 60 * 60 * 1000;
@@ -21,10 +22,14 @@
     cards: Object.fromEntries(
       CATEGORIES.map((id) => [id, document.querySelector(`[data-category="${id}"]`)])
     ),
+    syncForm: document.querySelector("[data-sync-form]"),
+    syncKey: document.querySelector("[data-sync-key]"),
+    syncStatus: document.querySelector("[data-sync-status]"),
+    syncBadge: document.querySelector("[data-sync-badge]"),
   };
 
-  const keys = { study: "", practice: "" };
-  const cloudTimers = { study: 0, practice: 0 };
+  let deviceKey = "";
+  let cloudTimer = 0;
   let tickTimer = 0;
 
   function now() {
@@ -182,22 +187,27 @@
         startedAt: state.startedAt,
       })
     );
-    for (const id of CATEGORIES) queueCloudSave(id);
+    queueCloudSave();
   }
 
   function loadKeys() {
     try {
-      const saved = JSON.parse(localStorage.getItem(KEYS_STORAGE) || "{}");
-      for (const id of CATEGORIES) {
-        keys[id] = typeof saved?.[id] === "string" ? saved[id].trim() : "";
+      const current = localStorage.getItem(KEY_STORAGE);
+      if (current) {
+        deviceKey = String(current).trim();
+        return;
       }
+      const legacy = JSON.parse(localStorage.getItem(LEGACY_KEY_STORAGE) || "{}");
+      deviceKey = String(legacy.study || legacy.practice || "").trim();
+      if (deviceKey) saveKeys();
     } catch {
-      /* start without keys */
+      deviceKey = "";
     }
   }
 
   function saveKeys() {
-    localStorage.setItem(KEYS_STORAGE, JSON.stringify(keys));
+    if (deviceKey) localStorage.setItem(KEY_STORAGE, deviceKey);
+    else localStorage.removeItem(KEY_STORAGE);
   }
 
   function generateKey() {
@@ -211,32 +221,34 @@
     return key.length > 0 && key.length <= 128 ? key : "";
   }
 
-  function setSyncStatus(category, message) {
-    const status = els.cards[category].querySelector("[data-sync-status]");
-    status.textContent = message;
+  function setSyncStatus(message) {
+    els.syncStatus.textContent = message;
   }
 
-  function updateSyncUi(category) {
-    const card = els.cards[category];
-    const linked = Boolean(keys[category]);
-    const badge = card.querySelector("[data-sync-badge]");
-    const input = card.querySelector("[data-sync-key]");
-    badge.hidden = !linked;
-    if (document.activeElement !== input) input.value = keys[category];
+  function updateSyncUi() {
+    const linked = Boolean(deviceKey);
+    els.syncBadge.hidden = !linked;
+    if (document.activeElement !== els.syncKey) els.syncKey.value = deviceKey;
     if (linked) {
-      setSyncStatus(category, "Linked. Hours sync with any device that uses this key.");
+      setSyncStatus("Linked. Study and Practice follow this key across devices.");
     } else {
-      setSyncStatus(category, "This timer stays on this browser until you set a key.");
+      setSyncStatus("Hours stay on this browser until you set a key.");
     }
   }
 
-  async function syncRequest(action, category, extra = {}) {
-    const key = keys[category];
-    if (!key) return null;
+  function liveAccumulated() {
+    return {
+      study: elapsed("study"),
+      practice: elapsed("practice"),
+    };
+  }
+
+  async function syncRequest(action, extra = {}) {
+    if (!deviceKey) return null;
     const response = await fetch(SYNC_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ action, category, key, ...extra }),
+      body: JSON.stringify({ action, key: deviceKey, ...extra }),
     });
     const data = await response.json().catch(() => ({}));
     if (!response.ok) {
@@ -245,60 +257,68 @@
     return data;
   }
 
-  function queueCloudSave(category) {
-    if (!keys[category]) return;
-    clearTimeout(cloudTimers[category]);
-    cloudTimers[category] = window.setTimeout(() => {
-      pushCloud(category).catch((error) => {
-        setSyncStatus(category, error.message || "Could not save to your key.");
+  function queueCloudSave() {
+    if (!deviceKey) return;
+    clearTimeout(cloudTimer);
+    cloudTimer = window.setTimeout(() => {
+      pushCloud().catch((error) => {
+        setSyncStatus(error.message || "Could not save to your key.");
       });
     }, 400);
   }
 
-  async function pushCloud(category) {
-    if (!keys[category]) return;
-    await syncRequest("put", category, { accumulatedMs: elapsed(category) });
-    updateSyncUi(category);
+  async function pushCloud() {
+    if (!deviceKey) return;
+    await syncRequest("put", { accumulated: liveAccumulated() });
+    updateSyncUi();
   }
 
-  async function linkKey(category, rawKey) {
+  function applyRemote(accumulated) {
+    const next = toAccumulated(accumulated);
+    if (state.active && next[state.active] !== state.accumulated[state.active]) {
+      state.active = null;
+      state.startedAt = null;
+    }
+    state.accumulated = next;
+  }
+
+  async function linkKey(rawKey) {
     const key = validKey(rawKey);
     if (!key) {
       throw new Error("Enter a key first.");
     }
 
-    const previous = keys[category];
-    keys[category] = key;
+    const previous = deviceKey;
+    deviceKey = key;
     let remote;
     try {
-      remote = await syncRequest("get", category);
+      remote = await syncRequest("get");
     } catch (error) {
-      keys[category] = previous;
+      deviceKey = previous;
       throw error;
     }
-    const localMs = state.accumulated[category];
-    const remoteMs = remote?.found ? positiveMs(remote.accumulatedMs) : 0;
 
-    if (remote?.found && remoteMs !== localMs && localMs > 0 && remoteMs > 0) {
+    const local = liveAccumulated();
+    const remoteAcc = remote?.found ? toAccumulated(remote.accumulated) : blankBucket();
+    const localTotal = local.study + local.practice;
+    const remoteTotal = remoteAcc.study + remoteAcc.practice;
+    const same =
+      local.study === remoteAcc.study && local.practice === remoteAcc.practice;
+
+    if (remote?.found && !same && localTotal > 0 && remoteTotal > 0) {
       const useCloud = window.confirm(
-        `This key already has ${format(remoteMs)} for ${category}. This device has ${format(localMs)}. OK uses the key's time. Cancel keeps this device and overwrites the key.`
+        `This key already has Study ${format(remoteAcc.study)} and Practice ${format(remoteAcc.practice)}. This device has Study ${format(local.study)} and Practice ${format(local.practice)}. OK uses the key's times. Cancel keeps this device and overwrites the key.`
       );
-      if (useCloud) {
-        if (state.active === category) {
-          state.active = null;
-          state.startedAt = null;
-        }
-        state.accumulated[category] = remoteMs;
-      }
-    } else if (remote?.found && localMs === 0) {
-      state.accumulated[category] = remoteMs;
+      if (useCloud) applyRemote(remoteAcc);
+    } else if (remote?.found && localTotal === 0) {
+      applyRemote(remoteAcc);
     }
 
     saveKeys();
     save();
     render();
-    if (!remote?.found || localMs > 0) await pushCloud(category);
-    updateSyncUi(category);
+    if (!remote?.found || localTotal > 0) await pushCloud();
+    updateSyncUi();
   }
 
   function liveDelta(category, at = now()) {
@@ -406,22 +426,7 @@
   function closeAdjustForms(exceptId) {
     for (const id of CATEGORIES) {
       if (id === exceptId) continue;
-      const card = els.cards[id];
-      card.querySelector("[data-adjust-form]").hidden = true;
-      card.querySelector("[data-sync-form]").hidden = true;
-    }
-  }
-
-  function toggleSyncForm(category) {
-    const form = els.cards[category].querySelector("[data-sync-form]");
-    const opening = form.hidden;
-    closeAdjustForms(category);
-    els.cards[category].querySelector("[data-adjust-form]").hidden = true;
-    form.hidden = !opening;
-    if (opening) {
-      const input = form.querySelector("[data-sync-key]");
-      input.value = keys[category];
-      input.focus();
+      els.cards[id].querySelector("[data-adjust-form]").hidden = true;
     }
   }
 
@@ -429,7 +434,6 @@
     const form = els.cards[category].querySelector("[data-adjust-form]");
     const opening = form.hidden;
     closeAdjustForms(category);
-    els.cards[category].querySelector("[data-sync-form]").hidden = true;
     form.hidden = !opening;
     if (opening) {
       form.querySelector("[data-hours]").value = "0";
@@ -565,7 +569,6 @@
       card.querySelector("[data-reset]").addEventListener("click", () => reset(id));
       card.querySelector("[data-adjust]").addEventListener("click", () => toggleAdjustForm(id));
       card.querySelector("[data-fullscreen]").addEventListener("click", () => toggleFullscreen(id));
-      card.querySelector("[data-sync-toggle]").addEventListener("click", () => toggleSyncForm(id));
       form.querySelector("[data-adjust-cancel]").addEventListener("click", () => {
         form.hidden = true;
       });
@@ -578,48 +581,43 @@
         adjust(id, dir, hours, minutes);
         form.hidden = true;
       });
-
-      const syncForm = card.querySelector("[data-sync-form]");
-      syncForm.querySelector("[data-sync-generate]").addEventListener("click", () => {
-        const input = syncForm.querySelector("[data-sync-key]");
-        input.type = "text";
-        input.value = generateKey();
-        input.select();
-        setSyncStatus(id, "Copy this key, then click Use key. Store it somewhere private.");
-      });
-      syncForm.querySelector("[data-sync-copy]").addEventListener("click", async () => {
-        const value = syncForm.querySelector("[data-sync-key]").value.trim() || keys[id];
-        if (!value) {
-          setSyncStatus(id, "Generate or type a key first.");
-          return;
-        }
-        try {
-          await navigator.clipboard.writeText(value);
-          setSyncStatus(id, "Copied. Keep this key private.");
-        } catch {
-          setSyncStatus(id, "Copy failed. Select the key and copy it yourself.");
-        }
-      });
-      syncForm.querySelector("[data-sync-forget]").addEventListener("click", () => {
-        keys[id] = "";
-        saveKeys();
-        syncForm.querySelector("[data-sync-key]").value = "";
-        updateSyncUi(id);
-        setSyncStatus(id, "Forgotten on this device. Cloud hours stay until someone uses the key.");
-      });
-      syncForm.querySelector("[data-sync-cancel]").addEventListener("click", () => {
-        syncForm.hidden = true;
-      });
-      syncForm.addEventListener("submit", async (event) => {
-        event.preventDefault();
-        try {
-          setSyncStatus(id, "Linking key…");
-          await linkKey(id, syncForm.querySelector("[data-sync-key]").value);
-        } catch (error) {
-          setSyncStatus(id, error.message || "Could not link this key.");
-        }
-      });
     }
+
+    els.syncForm.querySelector("[data-sync-generate]").addEventListener("click", () => {
+      els.syncKey.type = "text";
+      els.syncKey.value = generateKey();
+      els.syncKey.select();
+      setSyncStatus("Copy this key, then click Use key.");
+    });
+    els.syncForm.querySelector("[data-sync-copy]").addEventListener("click", async () => {
+      const value = els.syncKey.value.trim() || deviceKey;
+      if (!value) {
+        setSyncStatus("Generate or type a key first.");
+        return;
+      }
+      try {
+        await navigator.clipboard.writeText(value);
+        setSyncStatus("Copied. Keep this key private.");
+      } catch {
+        setSyncStatus("Copy failed. Select the key and copy it yourself.");
+      }
+    });
+    els.syncForm.querySelector("[data-sync-forget]").addEventListener("click", () => {
+      deviceKey = "";
+      saveKeys();
+      els.syncKey.value = "";
+      updateSyncUi();
+      setSyncStatus("Forgotten on this device. Cloud hours stay until someone uses the key.");
+    });
+    els.syncForm.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      try {
+        setSyncStatus("Linking key…");
+        await linkKey(els.syncKey.value);
+      } catch (error) {
+        setSyncStatus(error.message || "Could not link this key.");
+      }
+    });
 
     for (const button of els.endSessionButtons) {
       button.addEventListener("click", endSession);
@@ -649,29 +647,23 @@
   }
 
   async function restoreLinkedTimers() {
-    for (const id of CATEGORIES) {
-      if (!keys[id]) {
-        updateSyncUi(id);
-        continue;
+    if (!deviceKey) {
+      updateSyncUi();
+      return;
+    }
+    try {
+      const remote = await syncRequest("get");
+      if (remote?.found) {
+        const remoteAcc = toAccumulated(remote.accumulated);
+        state.accumulated = {
+          study: Math.max(remoteAcc.study, state.accumulated.study),
+          practice: Math.max(remoteAcc.practice, state.accumulated.practice),
+        };
       }
-      try {
-        const remote = await syncRequest("get", id);
-        if (remote?.found) {
-          const remoteMs = positiveMs(remote.accumulatedMs);
-          const next = Math.max(remoteMs, state.accumulated[id]);
-          if (next !== state.accumulated[id]) {
-            if (state.active === id) {
-              state.active = null;
-              state.startedAt = null;
-            }
-            state.accumulated[id] = next;
-          }
-        }
-        await pushCloud(id);
-        updateSyncUi(id);
-      } catch (error) {
-        setSyncStatus(id, error.message || "Could not load this key.");
-      }
+      await pushCloud();
+      updateSyncUi();
+    } catch (error) {
+      setSyncStatus(error.message || "Could not load this key.");
     }
     save();
     render();

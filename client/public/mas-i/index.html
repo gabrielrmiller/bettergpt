@@ -39,22 +39,45 @@
         </div>
       </section>
 
+      <section class="sync" aria-label="Device key">
+        <div class="sync__head">
+          <p class="sync__label">Device key</p>
+          <span class="sync__badge" data-sync-badge hidden>Linked</span>
+        </div>
+        <p class="sync__hint">
+          One key keeps Study and Practice in sync across your devices. Anyone with it can change
+          both totals.
+        </p>
+        <form class="sync__form" data-sync-form>
+          <label class="sync__key">
+            <span>Key</span>
+            <input
+              type="password"
+              name="sync-key"
+              autocomplete="off"
+              spellcheck="false"
+              maxlength="128"
+              data-sync-key
+            />
+          </label>
+          <div class="sync__actions">
+            <button type="button" class="btn btn--ghost" data-sync-generate>New key</button>
+            <button type="submit" class="btn btn--ghost">Use key</button>
+            <button type="button" class="btn btn--ghost" data-sync-copy>Copy</button>
+            <button type="button" class="btn btn--ghost" data-sync-forget>Forget</button>
+          </div>
+          <p class="sync__status" data-sync-status>
+            Hours stay on this browser until you set a key.
+          </p>
+        </form>
+      </section>
+
       <section class="timers" aria-label="Category stopwatches">
         <article class="timer" data-category="study">
           <div class="timer__head">
             <h2 class="timer__name">Study</h2>
             <div class="timer__meta">
               <span class="timer__status" data-status>Ready</span>
-              <span class="timer__sync" data-sync-badge hidden>Linked</span>
-              <button
-                type="button"
-                class="btn btn--ghost btn--icon"
-                data-sync-toggle
-                title="Set study sync key"
-                aria-label="Set study sync key"
-              >
-                Key
-              </button>
               <button
                 type="button"
                 class="btn btn--ghost btn--icon"
@@ -106,34 +129,6 @@
               <button type="button" class="btn btn--ghost" data-adjust-cancel>Cancel</button>
             </div>
           </form>
-          <form class="sync" data-sync-form hidden>
-            <p class="sync__label">Private device key</p>
-            <p class="sync__hint">
-              Use the same key on your phone and laptop. Anyone with this key can change this
-              timer.
-            </p>
-            <label class="sync__key">
-              <span>Key</span>
-              <input
-                type="password"
-                name="sync-key"
-                autocomplete="off"
-                spellcheck="false"
-                maxlength="128"
-                data-sync-key
-              />
-            </label>
-            <div class="sync__actions">
-              <button type="button" class="btn btn--ghost" data-sync-generate>New key</button>
-              <button type="submit" class="btn btn--ghost">Use key</button>
-              <button type="button" class="btn btn--ghost" data-sync-copy>Copy</button>
-              <button type="button" class="btn btn--ghost" data-sync-forget>Forget</button>
-              <button type="button" class="btn btn--ghost" data-sync-cancel>Close</button>
-            </div>
-            <p class="sync__status" data-sync-status>
-              This timer stays on this browser until you set a key.
-            </p>
-          </form>
         </article>
 
         <article class="timer" data-category="practice">
@@ -141,16 +136,6 @@
             <h2 class="timer__name">Practice</h2>
             <div class="timer__meta">
               <span class="timer__status" data-status>Ready</span>
-              <span class="timer__sync" data-sync-badge hidden>Linked</span>
-              <button
-                type="button"
-                class="btn btn--ghost btn--icon"
-                data-sync-toggle
-                title="Set practice sync key"
-                aria-label="Set practice sync key"
-              >
-                Key
-              </button>
               <button
                 type="button"
                 class="btn btn--ghost btn--icon"
@@ -202,42 +187,14 @@
               <button type="button" class="btn btn--ghost" data-adjust-cancel>Cancel</button>
             </div>
           </form>
-          <form class="sync" data-sync-form hidden>
-            <p class="sync__label">Private device key</p>
-            <p class="sync__hint">
-              Use the same key on your phone and laptop. Anyone with this key can change this
-              timer.
-            </p>
-            <label class="sync__key">
-              <span>Key</span>
-              <input
-                type="password"
-                name="sync-key"
-                autocomplete="off"
-                spellcheck="false"
-                maxlength="128"
-                data-sync-key
-              />
-            </label>
-            <div class="sync__actions">
-              <button type="button" class="btn btn--ghost" data-sync-generate>New key</button>
-              <button type="submit" class="btn btn--ghost">Use key</button>
-              <button type="button" class="btn btn--ghost" data-sync-copy>Copy</button>
-              <button type="button" class="btn btn--ghost" data-sync-forget>Forget</button>
-              <button type="button" class="btn btn--ghost" data-sync-cancel>Close</button>
-            </div>
-            <p class="sync__status" data-sync-status>
-              This timer stays on this browser until you set a key.
-            </p>
-          </form>
         </article>
       </section>
 
       <footer class="footnote">
         <p>
           Starting one timer pauses the other. End session to zero session clocks without touching
-          all-time hours. Use Adjust if you forgot to pause. Set a Key on each timer to keep hours
-          in sync across your devices. Keep those keys private.
+          all-time hours. Use Adjust if you forgot to pause. Set one device key to keep both timers
+          in sync across devices.
         </p>
       </footer>
     </main>
