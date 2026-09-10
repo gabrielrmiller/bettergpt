@@ -461,61 +461,40 @@
     syncTick();
   }
 
-  function fullscreenElement() {
-    return document.fullscreenElement || document.webkitFullscreenElement || null;
+  function isFocusView(card) {
+    return card.classList.contains("is-focus");
   }
 
-  function isCardFullscreen(card) {
-    return fullscreenElement() === card || card.classList.contains("is-focus");
-  }
-
-  async function enterFullscreen(card) {
-    try {
-      if (card.requestFullscreen) await card.requestFullscreen();
-      else if (card.webkitRequestFullscreen) card.webkitRequestFullscreen();
-      else card.classList.add("is-focus");
-    } catch {
-      card.classList.add("is-focus");
-    }
+  function enterFocus(card) {
+    for (const id of CATEGORIES) els.cards[id].classList.remove("is-focus");
+    card.classList.add("is-focus");
+    document.body.classList.add("is-focus-mode");
     render();
   }
 
-  async function exitFullscreen(card) {
+  function exitFocus(card) {
     card.classList.remove("is-focus");
-    const current = fullscreenElement();
-    if (current) {
-      try {
-        if (document.exitFullscreen) await document.exitFullscreen();
-        else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
-      } catch {
-        /* ignore */
-      }
-    }
+    document.body.classList.remove("is-focus-mode");
     render();
   }
 
-  function toggleFullscreen(category) {
+  function toggleFocus(category) {
     const card = els.cards[category];
-    if (isCardFullscreen(card)) exitFullscreen(card);
-    else {
-      for (const id of CATEGORIES) {
-        if (id !== category) els.cards[id].classList.remove("is-focus");
-      }
-      enterFullscreen(card);
-    }
+    if (isFocusView(card)) exitFocus(card);
+    else enterFocus(card);
   }
 
-  function updateFullscreenButtons() {
+  function updateFocusButtons() {
     for (const id of CATEGORIES) {
       const card = els.cards[id];
       const button = card.querySelector("[data-fullscreen]");
-      const active = isCardFullscreen(card);
-      button.textContent = active ? "Exit" : "Fullscreen";
+      const active = isFocusView(card);
+      button.textContent = active ? "Back" : "Focus";
       button.setAttribute(
         "aria-label",
-        active ? `Exit ${id} fullscreen` : `Fullscreen ${id} timer`
+        active ? `Exit ${id} focus view` : `Focus ${id} timer`
       );
-      button.title = active ? `Exit ${id} fullscreen` : `Fullscreen ${id} timer`;
+      button.title = active ? `Exit ${id} focus view` : `Focus ${id} timer`;
     }
   }
 
@@ -537,17 +516,11 @@
 
       const card = els.cards[id];
       const running = state.active === id;
-      const focused = isCardFullscreen(card);
 
-      // Same two clocks everywhere; fullscreen only swaps which one is primary.
-      setTime(card.querySelector("[data-display]"), focused ? sessionMs : totalMs);
-      setTime(card.querySelector("[data-all-time]"), focused ? totalMs : sessionMs);
-      card.querySelector("[data-clock-label]").textContent = focused
-        ? "This session"
-        : "All time";
-      card.querySelector("[data-secondary-label]").textContent = focused
-        ? "All time"
-        : "This session";
+      setTime(card.querySelector("[data-display]"), totalMs);
+      setTime(card.querySelector("[data-all-time]"), sessionMs);
+      card.querySelector("[data-clock-label]").textContent = "All time";
+      card.querySelector("[data-secondary-label]").textContent = "This session";
       card.querySelector("[data-status]").textContent = running ? "Running" : "Ready";
       card.querySelector("[data-toggle]").textContent = running ? "Pause" : "Start";
       card.classList.toggle("is-running", running);
@@ -557,7 +530,7 @@
     setTime(els.sessionTotal, session);
     const endDisabled = state.active == null && session === 0;
     for (const button of els.endSessionButtons) button.disabled = endDisabled;
-    updateFullscreenButtons();
+    updateFocusButtons();
   }
 
   function bind() {
@@ -568,7 +541,7 @@
       card.querySelector("[data-toggle]").addEventListener("click", () => start(id));
       card.querySelector("[data-reset]").addEventListener("click", () => reset(id));
       card.querySelector("[data-adjust]").addEventListener("click", () => toggleAdjustForm(id));
-      card.querySelector("[data-fullscreen]").addEventListener("click", () => toggleFullscreen(id));
+      card.querySelector("[data-fullscreen]").addEventListener("click", () => toggleFocus(id));
       form.querySelector("[data-adjust-cancel]").addEventListener("click", () => {
         form.hidden = true;
       });
@@ -623,14 +596,11 @@
       button.addEventListener("click", endSession);
     }
 
-    document.addEventListener("fullscreenchange", render);
-    document.addEventListener("webkitfullscreenchange", render);
-
     document.addEventListener("keydown", (event) => {
       if (event.key !== "Escape") return;
       for (const id of CATEGORIES) {
         const card = els.cards[id];
-        if (card.classList.contains("is-focus")) exitFullscreen(card);
+        if (card.classList.contains("is-focus")) exitFocus(card);
       }
     });
 

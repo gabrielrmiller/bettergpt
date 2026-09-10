@@ -283,7 +283,23 @@ button {
   font-size: 0.78rem;
 }
 
-.timer:fullscreen,
+.timer__clocks {
+  display: grid;
+  gap: 1.15rem;
+}
+
+body.is-focus-mode {
+  overflow: hidden;
+}
+
+body.is-focus-mode .brand,
+body.is-focus-mode .totals,
+body.is-focus-mode .sync,
+body.is-focus-mode .footnote,
+body.is-focus-mode .timer:not(.is-focus) {
+  display: none;
+}
+
 .timer.is-focus {
   position: fixed;
   inset: 0;
@@ -299,7 +315,7 @@ button {
   display: grid;
   align-content: center;
   justify-items: stretch;
-  gap: 1.5rem;
+  gap: clamp(1.25rem, 4vw, 2.25rem);
   background:
     radial-gradient(ellipse 70% 50% at 50% 0%, color-mix(in srgb, var(--accent) 18%, transparent), transparent 60%),
     linear-gradient(165deg, #121a22, #0e1419 70%);
@@ -307,70 +323,72 @@ button {
   overflow: auto;
 }
 
-.timer:fullscreen::before,
 .timer.is-focus::before {
   height: 4px;
   opacity: 1;
 }
 
-.timer:fullscreen .timer__name,
 .timer.is-focus .timer__name {
   font-size: clamp(2rem, 6vw, 3.2rem);
 }
 
-.timer:fullscreen .timer__clock-label,
-.timer.is-focus .timer__clock-label {
+.timer.is-focus .timer__clocks {
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(1rem, 4vw, 2.5rem);
+  width: min(920px, 100%);
+  margin: 0 auto;
+  align-items: stretch;
+}
+
+.timer.is-focus .timer__clock,
+.timer.is-focus .timer__total {
+  display: grid;
+  gap: 0.55rem;
+  justify-items: center;
+  text-align: center;
+  padding: clamp(1rem, 3vw, 1.6rem) 1rem;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--line);
+}
+
+.timer.is-focus .timer__totals {
+  display: grid;
+}
+
+.timer.is-focus .timer__clock-label,
+.timer.is-focus .timer__total-label {
   text-align: center;
   font-size: 0.85rem;
   letter-spacing: 0.14em;
 }
 
-.timer:fullscreen .timer__display,
-.timer.is-focus .timer__display {
-  font-size: clamp(3.5rem, 14vw, 7rem);
-  text-align: center;
-}
-
-.timer:fullscreen .timer__totals,
-.timer.is-focus .timer__totals {
-  max-width: 280px;
-  width: 100%;
-  margin: 0 auto;
-}
-
-.timer:fullscreen .timer__total,
-.timer.is-focus .timer__total {
-  text-align: center;
-  padding: 0.85rem 1rem;
-}
-
-.timer:fullscreen .timer__total-value,
+.timer.is-focus .timer__display,
 .timer.is-focus .timer__total-value {
-  font-size: clamp(1.15rem, 3vw, 1.45rem);
+  font-size: clamp(2.1rem, 8vw, 5rem);
+  text-align: center;
+  line-height: 1;
 }
 
-.timer:fullscreen .timer__actions,
 .timer.is-focus .timer__actions {
   max-width: 420px;
   width: 100%;
   margin: 0 auto;
 }
 
+.timer.is-focus [data-adjust],
+.timer.is-focus [data-reset],
+.timer.is-focus .adjust {
+  display: none;
+}
+
 .timer__end-session {
   display: none;
 }
 
-.timer:fullscreen .timer__end-session,
 .timer.is-focus .timer__end-session {
   display: block;
   grid-column: 1 / -1;
-}
-
-.timer:fullscreen .adjust,
-.timer.is-focus .adjust {
-  max-width: 420px;
-  width: 100%;
-  margin: 0 auto;
 }
 
 @keyframes pulse {
@@ -653,6 +671,12 @@ button {
   margin: 0;
   font-size: 0.88rem;
   color: var(--fog);
+}
+
+@media (max-width: 640px) {
+  .timer.is-focus .timer__clocks {
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (max-width: 860px) {
