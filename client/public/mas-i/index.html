@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#0e1419" />
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+    <title>MAS-I Timer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;500;600&family=Syne:wght@700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="atmosphere" aria-hidden="true"></div>
+
+    <main class="app">
+      <header class="brand">
+        <p class="brand__mark">CAS · Modern Actuarial Statistics I</p>
+        <h1 class="brand__title">MAS-I</h1>
+        <p class="brand__sub">Study hour tracker</p>
+      </header>
+
+      <section class="totals" aria-label="Lifetime totals">
+        <div class="total">
+          <span class="total__label">All time</span>
+          <time class="total__value" id="grand-total" datetime="PT0S">00:00:00</time>
+        </div>
+        <div class="total total--session">
+          <span class="total__label">This session</span>
+          <time class="total__value" id="session-total" datetime="PT0S">00:00:00</time>
+          <button type="button" class="btn btn--ghost total__end" id="end-session" data-end-session disabled>
+            End session
+          </button>
+        </div>
+      </section>
+
+      <section class="timers" aria-label="Category stopwatches">
+        <article class="timer" data-category="study">
+          <div class="timer__head">
+            <h2 class="timer__name">Study</h2>
+            <div class="timer__meta">
+              <span class="timer__status" data-status>Ready</span>
+              <button
+                type="button"
+                class="btn btn--ghost btn--icon"
+                data-fullscreen
+                title="Fullscreen study timer"
+                aria-label="Fullscreen study timer"
+              >
+                Fullscreen
+              </button>
+            </div>
+          </div>
+          <div class="timer__clock">
+            <span class="timer__clock-label" data-clock-label>All time</span>
+            <time class="timer__display" data-display datetime="PT0S">00:00:00</time>
+          </div>
+          <div class="timer__totals">
+            <div class="timer__total">
+              <span class="timer__total-label" data-secondary-label>This session</span>
+              <time class="timer__total-value" data-all-time datetime="PT0S">00:00:00</time>
+            </div>
+          </div>
+          <div class="timer__actions">
+            <button type="button" class="btn btn--primary" data-toggle>Start</button>
+            <button type="button" class="btn btn--ghost" data-adjust title="Adjust study time">
+              Adjust
+            </button>
+            <button type="button" class="btn btn--ghost" data-reset title="Reset study time">
+              Reset
+            </button>
+            <button type="button" class="btn btn--ghost timer__end-session" data-end-session disabled>
+              End session
+            </button>
+          </div>
+          <form class="adjust" data-adjust-form hidden>
+            <p class="adjust__label">Correct accidental time</p>
+            <div class="adjust__fields">
+              <label>
+                <span>Hours</span>
+                <input type="number" min="0" step="1" value="0" data-hours />
+              </label>
+              <label>
+                <span>Minutes</span>
+                <input type="number" min="0" max="59" step="1" value="0" data-minutes />
+              </label>
+            </div>
+            <div class="adjust__actions">
+              <button type="submit" class="btn btn--ghost" data-adjust-dir="-1">Subtract</button>
+              <button type="submit" class="btn btn--ghost" data-adjust-dir="1">Add</button>
+              <button type="button" class="btn btn--ghost" data-adjust-cancel>Cancel</button>
+            </div>
+          </form>
+        </article>
+
+        <article class="timer" data-category="practice">
+          <div class="timer__head">
+            <h2 class="timer__name">Practice</h2>
+            <div class="timer__meta">
+              <span class="timer__status" data-status>Ready</span>
+              <button
+                type="button"
+                class="btn btn--ghost btn--icon"
+                data-fullscreen
+                title="Fullscreen practice timer"
+                aria-label="Fullscreen practice timer"
+              >
+                Fullscreen
+              </button>
+            </div>
+          </div>
+          <div class="timer__clock">
+            <span class="timer__clock-label" data-clock-label>All time</span>
+            <time class="timer__display" data-display datetime="PT0S">00:00:00</time>
+          </div>
+          <div class="timer__totals">
+            <div class="timer__total">
+              <span class="timer__total-label" data-secondary-label>This session</span>
+              <time class="timer__total-value" data-all-time datetime="PT0S">00:00:00</time>
+            </div>
+          </div>
+          <div class="timer__actions">
+            <button type="button" class="btn btn--primary" data-toggle>Start</button>
+            <button type="button" class="btn btn--ghost" data-adjust title="Adjust practice time">
+              Adjust
+            </button>
+            <button type="button" class="btn btn--ghost" data-reset title="Reset practice time">
+              Reset
+            </button>
+            <button type="button" class="btn btn--ghost timer__end-session" data-end-session disabled>
+              End session
+            </button>
+          </div>
+          <form class="adjust" data-adjust-form hidden>
+            <p class="adjust__label">Correct accidental time</p>
+            <div class="adjust__fields">
+              <label>
+                <span>Hours</span>
+                <input type="number" min="0" step="1" value="0" data-hours />
+              </label>
+              <label>
+                <span>Minutes</span>
+                <input type="number" min="0" max="59" step="1" value="0" data-minutes />
+              </label>
+            </div>
+            <div class="adjust__actions">
+              <button type="submit" class="btn btn--ghost" data-adjust-dir="-1">Subtract</button>
+              <button type="submit" class="btn btn--ghost" data-adjust-dir="1">Add</button>
+              <button type="button" class="btn btn--ghost" data-adjust-cancel>Cancel</button>
+            </div>
+          </form>
+        </article>
+      </section>
+
+      <footer class="footnote">
+        <p>
+          Starting one timer pauses the other. End session to zero session clocks without touching
+          all-time hours. Use Adjust if you forgot to pause. Hours persist in this browser.
+        </p>
+      </footer>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>

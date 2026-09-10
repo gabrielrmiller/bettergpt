@@ -1,6 +1,8 @@
 {
   "rewrites": [
     { "source": "/when", "destination": "/when.html" },
-    { "source": "/when/", "destination": "/when.html" }
+    { "source": "/when/", "destination": "/when.html" },
+    { "source": "/mas-i", "destination": "/mas-i/index.html" },
+    { "source": "/mas-i/", "destination": "/mas-i/index.html" }
   ]
 }

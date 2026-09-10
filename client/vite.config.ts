@@ -9,6 +9,7 @@ const isGitHubPages = process.env.VITE_GH_PAGES === 'true'
 
 function rewriteWhenPage(req: IncomingMessage, _res: unknown, next: () => void) {
   if (req.url === '/when' || req.url === '/when/') req.url = '/when.html'
+  if (req.url === '/mas-i' || req.url === '/mas-i/') req.url = '/mas-i/index.html'
   next()
 }
 
