@@ -1,8 +1,11 @@
 (() => {
   const STORAGE_KEY = "mas-i-timer-v4";
+  const KEYS_STORAGE = "mas-i-timer-keys-v1";
   const LEGACY_KEYS = ["mas-i-timer-v3", "exam-timer-v2", "mas-i-timer-v1"];
   const CATEGORIES = ["study", "practice"];
   const STALE_RUN_MS = 12 * 60 * 60 * 1000;
+  const SYNC_URL = "/api/timer/sync";
+  const KEY_ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
 
   const state = {
     accumulated: { study: 0, practice: 0 },
@@ -20,6 +23,8 @@
     ),
   };
 
+  const keys = { study: "", practice: "" };
+  const cloudTimers = { study: 0, practice: 0 };
   let tickTimer = 0;
 
   function now() {
@@ -177,6 +182,123 @@
         startedAt: state.startedAt,
       })
     );
+    for (const id of CATEGORIES) queueCloudSave(id);
+  }
+
+  function loadKeys() {
+    try {
+      const saved = JSON.parse(localStorage.getItem(KEYS_STORAGE) || "{}");
+      for (const id of CATEGORIES) {
+        keys[id] = typeof saved?.[id] === "string" ? saved[id].trim() : "";
+      }
+    } catch {
+      /* start without keys */
+    }
+  }
+
+  function saveKeys() {
+    localStorage.setItem(KEYS_STORAGE, JSON.stringify(keys));
+  }
+
+  function generateKey() {
+    const bytes = new Uint8Array(20);
+    crypto.getRandomValues(bytes);
+    return Array.from(bytes, (byte) => KEY_ALPHABET[byte & 31]).join("");
+  }
+
+  function validKey(value) {
+    const key = String(value || "").trim();
+    return key.length >= 16 && key.length <= 128 && /^[A-Za-z0-9_-]+$/.test(key) ? key : "";
+  }
+
+  function setSyncStatus(category, message) {
+    const status = els.cards[category].querySelector("[data-sync-status]");
+    status.textContent = message;
+  }
+
+  function updateSyncUi(category) {
+    const card = els.cards[category];
+    const linked = Boolean(keys[category]);
+    const badge = card.querySelector("[data-sync-badge]");
+    const input = card.querySelector("[data-sync-key]");
+    badge.hidden = !linked;
+    if (document.activeElement !== input) input.value = keys[category];
+    if (linked) {
+      setSyncStatus(category, "Linked. Hours sync with any device that uses this key.");
+    } else {
+      setSyncStatus(category, "This timer stays on this browser until you set a key.");
+    }
+  }
+
+  async function syncRequest(action, category, extra = {}) {
+    const key = keys[category];
+    if (!key) return null;
+    const response = await fetch(SYNC_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action, category, key, ...extra }),
+    });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) {
+      throw new Error(data.error || "Could not sync timer.");
+    }
+    return data;
+  }
+
+  function queueCloudSave(category) {
+    if (!keys[category]) return;
+    clearTimeout(cloudTimers[category]);
+    cloudTimers[category] = window.setTimeout(() => {
+      pushCloud(category).catch((error) => {
+        setSyncStatus(category, error.message || "Could not save to your key.");
+      });
+    }, 400);
+  }
+
+  async function pushCloud(category) {
+    if (!keys[category]) return;
+    await syncRequest("put", category, { accumulatedMs: elapsed(category) });
+    updateSyncUi(category);
+  }
+
+  async function linkKey(category, rawKey) {
+    const key = validKey(rawKey);
+    if (!key) {
+      throw new Error("Use 16–128 characters: letters, numbers, dashes, or underscores.");
+    }
+
+    const previous = keys[category];
+    keys[category] = key;
+    let remote;
+    try {
+      remote = await syncRequest("get", category);
+    } catch (error) {
+      keys[category] = previous;
+      throw error;
+    }
+    const localMs = state.accumulated[category];
+    const remoteMs = remote?.found ? positiveMs(remote.accumulatedMs) : 0;
+
+    if (remote?.found && remoteMs !== localMs && localMs > 0 && remoteMs > 0) {
+      const useCloud = window.confirm(
+        `This key already has ${format(remoteMs)} for ${category}. This device has ${format(localMs)}. OK uses the key's time. Cancel keeps this device and overwrites the key.`
+      );
+      if (useCloud) {
+        if (state.active === category) {
+          state.active = null;
+          state.startedAt = null;
+        }
+        state.accumulated[category] = remoteMs;
+      }
+    } else if (remote?.found && localMs === 0) {
+      state.accumulated[category] = remoteMs;
+    }
+
+    saveKeys();
+    save();
+    render();
+    if (!remote?.found || localMs > 0) await pushCloud(category);
+    updateSyncUi(category);
   }
 
   function liveDelta(category, at = now()) {
@@ -284,8 +406,22 @@
   function closeAdjustForms(exceptId) {
     for (const id of CATEGORIES) {
       if (id === exceptId) continue;
-      const form = els.cards[id].querySelector("[data-adjust-form]");
-      form.hidden = true;
+      const card = els.cards[id];
+      card.querySelector("[data-adjust-form]").hidden = true;
+      card.querySelector("[data-sync-form]").hidden = true;
+    }
+  }
+
+  function toggleSyncForm(category) {
+    const form = els.cards[category].querySelector("[data-sync-form]");
+    const opening = form.hidden;
+    closeAdjustForms(category);
+    els.cards[category].querySelector("[data-adjust-form]").hidden = true;
+    form.hidden = !opening;
+    if (opening) {
+      const input = form.querySelector("[data-sync-key]");
+      input.value = keys[category];
+      input.focus();
     }
   }
 
@@ -293,6 +429,7 @@
     const form = els.cards[category].querySelector("[data-adjust-form]");
     const opening = form.hidden;
     closeAdjustForms(category);
+    els.cards[category].querySelector("[data-sync-form]").hidden = true;
     form.hidden = !opening;
     if (opening) {
       form.querySelector("[data-hours]").value = "0";
@@ -428,6 +565,7 @@
       card.querySelector("[data-reset]").addEventListener("click", () => reset(id));
       card.querySelector("[data-adjust]").addEventListener("click", () => toggleAdjustForm(id));
       card.querySelector("[data-fullscreen]").addEventListener("click", () => toggleFullscreen(id));
+      card.querySelector("[data-sync-toggle]").addEventListener("click", () => toggleSyncForm(id));
       form.querySelector("[data-adjust-cancel]").addEventListener("click", () => {
         form.hidden = true;
       });
@@ -439,6 +577,47 @@
         const minutes = Number(form.querySelector("[data-minutes]").value) || 0;
         adjust(id, dir, hours, minutes);
         form.hidden = true;
+      });
+
+      const syncForm = card.querySelector("[data-sync-form]");
+      syncForm.querySelector("[data-sync-generate]").addEventListener("click", () => {
+        const input = syncForm.querySelector("[data-sync-key]");
+        input.type = "text";
+        input.value = generateKey();
+        input.select();
+        setSyncStatus(id, "Copy this key, then click Use key. Store it somewhere private.");
+      });
+      syncForm.querySelector("[data-sync-copy]").addEventListener("click", async () => {
+        const value = syncForm.querySelector("[data-sync-key]").value.trim() || keys[id];
+        if (!value) {
+          setSyncStatus(id, "Generate or type a key first.");
+          return;
+        }
+        try {
+          await navigator.clipboard.writeText(value);
+          setSyncStatus(id, "Copied. Keep this key private.");
+        } catch {
+          setSyncStatus(id, "Copy failed. Select the key and copy it yourself.");
+        }
+      });
+      syncForm.querySelector("[data-sync-forget]").addEventListener("click", () => {
+        keys[id] = "";
+        saveKeys();
+        syncForm.querySelector("[data-sync-key]").value = "";
+        updateSyncUi(id);
+        setSyncStatus(id, "Forgotten on this device. Cloud hours stay until someone uses the key.");
+      });
+      syncForm.querySelector("[data-sync-cancel]").addEventListener("click", () => {
+        syncForm.hidden = true;
+      });
+      syncForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        try {
+          setSyncStatus(id, "Linking key…");
+          await linkKey(id, syncForm.querySelector("[data-sync-key]").value);
+        } catch (error) {
+          setSyncStatus(id, error.message || "Could not link this key.");
+        }
       });
     }
 
@@ -469,8 +648,39 @@
     window.addEventListener("beforeunload", save);
   }
 
+  async function restoreLinkedTimers() {
+    for (const id of CATEGORIES) {
+      if (!keys[id]) {
+        updateSyncUi(id);
+        continue;
+      }
+      try {
+        const remote = await syncRequest("get", id);
+        if (remote?.found) {
+          const remoteMs = positiveMs(remote.accumulatedMs);
+          const next = Math.max(remoteMs, state.accumulated[id]);
+          if (next !== state.accumulated[id]) {
+            if (state.active === id) {
+              state.active = null;
+              state.startedAt = null;
+            }
+            state.accumulated[id] = next;
+          }
+        }
+        await pushCloud(id);
+        updateSyncUi(id);
+      } catch (error) {
+        setSyncStatus(id, error.message || "Could not load this key.");
+      }
+    }
+    save();
+    render();
+  }
+
+  loadKeys();
   load();
   bind();
   render();
   syncTick();
+  restoreLinkedTimers();
 })();

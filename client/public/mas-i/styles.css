@@ -503,6 +503,93 @@ button {
   font-size: 0.82rem;
 }
 
+.timer__sync {
+  font-size: 0.68rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--accent) 80%, var(--paper));
+  font-weight: 600;
+}
+
+.timer__sync[hidden] {
+  display: none;
+}
+
+.sync {
+  display: grid;
+  gap: 0.7rem;
+  padding-top: 0.15rem;
+  border-top: 1px solid var(--line);
+}
+
+.sync[hidden] {
+  display: none;
+}
+
+.sync__label {
+  margin: 0;
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--fog);
+  font-weight: 500;
+}
+
+.sync__hint {
+  margin: 0;
+  font-size: 0.82rem;
+  line-height: 1.45;
+  color: var(--fog);
+}
+
+.sync__key {
+  display: grid;
+  gap: 0.3rem;
+  font-size: 0.75rem;
+  color: var(--fog);
+}
+
+.sync__key input {
+  width: 100%;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--paper);
+  padding: 0.55rem 0.7rem;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  outline: none;
+}
+
+.sync__key input:focus {
+  border-color: color-mix(in srgb, var(--accent) 50%, transparent);
+}
+
+.sync__actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.45rem;
+}
+
+.sync__actions .btn {
+  padding: 0.55rem 0.7rem;
+  font-size: 0.82rem;
+}
+
+.sync__status {
+  margin: 0;
+  font-size: 0.78rem;
+  line-height: 1.4;
+  color: var(--fog);
+}
+
+.timer:fullscreen .sync,
+.timer.is-focus .sync {
+  max-width: 420px;
+  width: 100%;
+  margin: 0 auto;
+}
+
 .btn {
   border-radius: 999px;
   padding: 0.72rem 1.1rem;

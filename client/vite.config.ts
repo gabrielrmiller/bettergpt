@@ -61,13 +61,30 @@ function whenApi(): Plugin {
       server.middlewares.use(async (req, res, next) => {
         const parsed = new URL(req.url || '/', 'http://localhost')
         const pathname = parsed.pathname
-        if (pathname !== '/api/availability/poll' && pathname !== '/api/availability/people') {
+        if (
+          pathname !== "/api/availability/poll" &&
+          pathname !== "/api/availability/people" &&
+          pathname !== "/api/timer/sync"
+        ) {
           next()
           return
         }
 
         try {
-          const { deletePerson, getPoll, upsertPerson } = await import('./api/availability/_poll.js')
+          if (pathname === "/api/timer/sync") {
+            if (req.method !== "POST") {
+              res.setHeader("Allow", "POST")
+              sendJson(res, 405, { error: "Method not allowed." })
+              return
+            }
+            const { enforceRateLimit, handleTimer } = await import("./api/timer/_store.js")
+            const body = await readJsonBody(req)
+            await enforceRateLimit("local")
+            sendJson(res, 200, await handleTimer(body))
+            return
+          }
+
+          const { deletePerson, getPoll, upsertPerson } = await import("./api/availability/_poll.js")
           if (pathname === '/api/availability/poll' && req.method === 'GET') {
             sendJson(res, 200, await getPoll())
             return
@@ -91,7 +108,7 @@ function whenApi(): Plugin {
         } catch (error) {
           const err = error as { status?: number; message?: string }
           sendJson(res, err.status || 500, {
-            error: err.message || 'Could not load availability.',
+            error: err.message || 'Request failed.',
           })
         }
       })
