@@ -7,9 +7,13 @@ import type { IncomingMessage, ServerResponse } from 'node:http'
 // Set VITE_GH_PAGES=true for GitHub Pages deployment
 const isGitHubPages = process.env.VITE_GH_PAGES === 'true'
 
-function rewriteWhenPage(req: IncomingMessage, _res: unknown, next: () => void) {
+function rewriteWhenPage(req: IncomingMessage, res: ServerResponse, next: () => void) {
   if (req.url === '/when' || req.url === '/when/') req.url = '/when.html'
-  if (req.url === '/mas-i' || req.url === '/mas-i/') req.url = '/mas-i/index.html'
+  if (req.url === '/mas-i') {
+    res.writeHead(308, { Location: '/mas-i/' })
+    res.end()
+    return
+  }
   next()
 }
 
