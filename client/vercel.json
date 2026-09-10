@@ -1,6 +1,12 @@
 {
   "redirects": [
-    { "source": "/mas-i", "destination": "/mas-i/", "permanent": true }
+    { "source": "/mas-i", "destination": "/mas-i/", "permanent": true },
+    { "source": "/mas-i/studyfs", "destination": "/mas-i/studyfs/", "permanent": true },
+    { "source": "/mas-i/examfs", "destination": "/mas-i/examfs/", "permanent": true },
+    { "source": "/studyfs", "destination": "/mas-i/studyfs/", "permanent": false },
+    { "source": "/studyfs/", "destination": "/mas-i/studyfs/", "permanent": false },
+    { "source": "/examfs", "destination": "/mas-i/examfs/", "permanent": false },
+    { "source": "/examfs/", "destination": "/mas-i/examfs/", "permanent": false }
   ],
   "rewrites": [
     { "source": "/when", "destination": "/when.html" },

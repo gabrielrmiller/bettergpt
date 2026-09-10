@@ -14,6 +14,26 @@ function rewriteWhenPage(req: IncomingMessage, res: ServerResponse, next: () => 
     res.end()
     return
   }
+  if (req.url === '/studyfs' || req.url === '/studyfs/') {
+    res.writeHead(308, { Location: '/mas-i/studyfs/' })
+    res.end()
+    return
+  }
+  if (req.url === '/examfs' || req.url === '/examfs/') {
+    res.writeHead(308, { Location: '/mas-i/examfs/' })
+    res.end()
+    return
+  }
+  if (req.url === '/mas-i/studyfs') {
+    res.writeHead(308, { Location: '/mas-i/studyfs/' })
+    res.end()
+    return
+  }
+  if (req.url === '/mas-i/examfs') {
+    res.writeHead(308, { Location: '/mas-i/examfs/' })
+    res.end()
+    return
+  }
   next()
 }
 

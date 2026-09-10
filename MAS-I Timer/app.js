@@ -461,27 +461,36 @@
     syncTick();
   }
 
+  function focusCategoryFromPath() {
+    const path = location.pathname.replace(/\/+$/, "").toLowerCase();
+    if (path.endsWith("studyfs")) return "study";
+    if (path.endsWith("examfs") || path.endsWith("practicefs")) return "practice";
+    return null;
+  }
+
+  function homeHref() {
+    if (document.querySelector("base")) return "./";
+    return focusCategoryFromPath() ? "../" : "./";
+  }
+
+  function focusHref(category) {
+    const slug = category === "study" ? "studyfs" : "examfs";
+    if (document.querySelector("base")) return `${slug}/`;
+    return focusCategoryFromPath() ? `../${slug}/` : `${slug}/`;
+  }
+
+  function applyFocusPage() {
+    const id = focusCategoryFromPath();
+    for (const cat of CATEGORIES) els.cards[cat].classList.remove("is-focus");
+    document.body.classList.toggle("is-focus-page", Boolean(id));
+    if (!id) return null;
+    els.cards[id].classList.add("is-focus");
+    document.title = id === "study" ? "MAS-I Study" : "MAS-I Practice";
+    return id;
+  }
+
   function isFocusView(card) {
     return card.classList.contains("is-focus");
-  }
-
-  function enterFocus(card) {
-    for (const id of CATEGORIES) els.cards[id].classList.remove("is-focus");
-    card.classList.add("is-focus");
-    document.body.classList.add("is-focus-mode");
-    render();
-  }
-
-  function exitFocus(card) {
-    card.classList.remove("is-focus");
-    document.body.classList.remove("is-focus-mode");
-    render();
-  }
-
-  function toggleFocus(category) {
-    const card = els.cards[category];
-    if (isFocusView(card)) exitFocus(card);
-    else enterFocus(card);
   }
 
   function updateFocusButtons() {
@@ -490,11 +499,12 @@
       const button = card.querySelector("[data-fullscreen]");
       const active = isFocusView(card);
       button.textContent = active ? "Back" : "Focus";
+      button.setAttribute("href", active ? homeHref() : focusHref(id));
       button.setAttribute(
         "aria-label",
-        active ? `Exit ${id} focus view` : `Focus ${id} timer`
+        active ? `Back to MAS-I timer` : `Open ${id} focus page`
       );
-      button.title = active ? `Exit ${id} focus view` : `Focus ${id} timer`;
+      button.title = active ? "Back to MAS-I timer" : `Open ${id} focus page`;
     }
   }
 
@@ -516,11 +526,16 @@
 
       const card = els.cards[id];
       const running = state.active === id;
+      const focused = isFocusView(card);
 
-      setTime(card.querySelector("[data-display]"), totalMs);
-      setTime(card.querySelector("[data-all-time]"), sessionMs);
-      card.querySelector("[data-clock-label]").textContent = "All time";
-      card.querySelector("[data-secondary-label]").textContent = "This session";
+      setTime(card.querySelector("[data-display]"), focused ? sessionMs : totalMs);
+      setTime(card.querySelector("[data-all-time]"), focused ? totalMs : sessionMs);
+      card.querySelector("[data-clock-label]").textContent = focused
+        ? "This session"
+        : "All time";
+      card.querySelector("[data-secondary-label]").textContent = focused
+        ? "All time"
+        : "This session";
       card.querySelector("[data-status]").textContent = running ? "Running" : "Ready";
       card.querySelector("[data-toggle]").textContent = running ? "Pause" : "Start";
       card.classList.toggle("is-running", running);
@@ -541,7 +556,6 @@
       card.querySelector("[data-toggle]").addEventListener("click", () => start(id));
       card.querySelector("[data-reset]").addEventListener("click", () => reset(id));
       card.querySelector("[data-adjust]").addEventListener("click", () => toggleAdjustForm(id));
-      card.querySelector("[data-fullscreen]").addEventListener("click", () => toggleFocus(id));
       form.querySelector("[data-adjust-cancel]").addEventListener("click", () => {
         form.hidden = true;
       });
@@ -597,11 +611,8 @@
     }
 
     document.addEventListener("keydown", (event) => {
-      if (event.key !== "Escape") return;
-      for (const id of CATEGORIES) {
-        const card = els.cards[id];
-        if (card.classList.contains("is-focus")) exitFocus(card);
-      }
+      if (event.key !== "Escape" || !focusCategoryFromPath()) return;
+      location.href = homeHref();
     });
 
     document.addEventListener("visibilitychange", () => {
@@ -641,6 +652,7 @@
 
   loadKeys();
   load();
+  applyFocusPage();
   bind();
   render();
   syncTick();

@@ -181,9 +181,9 @@ button {
 
 .timers {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(220px, 0.82fr);
   gap: 1rem;
-  max-width: 760px;
+  max-width: 1080px;
   margin: 0 auto;
   width: 100%;
 }
@@ -284,29 +284,33 @@ button {
 }
 
 .timer__clocks {
-  display: grid;
-  gap: 1.15rem;
+  display: contents;
 }
 
-body.is-focus-mode {
-  overflow: hidden;
-}
-
-body.is-focus-mode .brand,
-body.is-focus-mode .totals,
-body.is-focus-mode .sync,
-body.is-focus-mode .footnote,
-body.is-focus-mode .timer:not(.is-focus) {
+body.is-focus-page .brand,
+body.is-focus-page .totals,
+body.is-focus-page .sync,
+body.is-focus-page .footnote,
+body.is-focus-page .timer:not(.is-focus) {
   display: none;
 }
 
-.timer.is-focus {
-  position: fixed;
-  inset: 0;
-  z-index: 40;
+body.is-focus-page .app {
   width: 100%;
-  height: 100%;
   max-width: none;
+  padding: 0;
+  min-height: 100dvh;
+}
+
+body.is-focus-page .timers {
+  display: block;
+  max-width: none;
+  margin: 0;
+}
+
+body.is-focus-page .timer.is-focus {
+  min-height: 100dvh;
+  width: 100%;
   margin: 0;
   border-radius: 0;
   border: none;
@@ -315,7 +319,7 @@ body.is-focus-mode .timer:not(.is-focus) {
   display: grid;
   align-content: center;
   justify-items: stretch;
-  gap: clamp(1.25rem, 4vw, 2.25rem);
+  gap: 1.5rem;
   background:
     radial-gradient(ellipse 70% 50% at 50% 0%, color-mix(in srgb, var(--accent) 18%, transparent), transparent 60%),
     linear-gradient(165deg, #121a22, #0e1419 70%);
@@ -323,72 +327,56 @@ body.is-focus-mode .timer:not(.is-focus) {
   overflow: auto;
 }
 
-.timer.is-focus::before {
+body.is-focus-page .timer.is-focus::before {
   height: 4px;
   opacity: 1;
 }
 
-.timer.is-focus .timer__name {
+body.is-focus-page .timer.is-focus .timer__name {
   font-size: clamp(2rem, 6vw, 3.2rem);
 }
 
-.timer.is-focus .timer__clocks {
-  grid-template-columns: 1fr 1fr;
-  gap: clamp(1rem, 4vw, 2.5rem);
-  width: min(920px, 100%);
-  margin: 0 auto;
-  align-items: stretch;
-}
-
-.timer.is-focus .timer__clock,
-.timer.is-focus .timer__total {
-  display: grid;
-  gap: 0.55rem;
-  justify-items: center;
-  text-align: center;
-  padding: clamp(1rem, 3vw, 1.6rem) 1rem;
-  border-radius: 18px;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid var(--line);
-}
-
-.timer.is-focus .timer__totals {
-  display: grid;
-}
-
-.timer.is-focus .timer__clock-label,
-.timer.is-focus .timer__total-label {
+body.is-focus-page .timer.is-focus .timer__clock-label {
   text-align: center;
   font-size: 0.85rem;
   letter-spacing: 0.14em;
 }
 
-.timer.is-focus .timer__display,
-.timer.is-focus .timer__total-value {
-  font-size: clamp(2.1rem, 8vw, 5rem);
+body.is-focus-page .timer.is-focus .timer__display {
+  font-size: clamp(3.5rem, 14vw, 7rem);
   text-align: center;
-  line-height: 1;
 }
 
-.timer.is-focus .timer__actions {
+body.is-focus-page .timer.is-focus .timer__totals {
+  max-width: 280px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+body.is-focus-page .timer.is-focus .timer__total {
+  text-align: center;
+  padding: 0.85rem 1rem;
+}
+
+body.is-focus-page .timer.is-focus .timer__total-value {
+  font-size: clamp(1.15rem, 3vw, 1.45rem);
+}
+
+body.is-focus-page .timer.is-focus .timer__actions {
   max-width: 420px;
   width: 100%;
   margin: 0 auto;
 }
 
-.timer.is-focus [data-adjust],
-.timer.is-focus [data-reset],
-.timer.is-focus .adjust {
-  display: none;
-}
-
-.timer__end-session {
-  display: none;
-}
-
-.timer.is-focus .timer__end-session {
+body.is-focus-page .timer.is-focus .timer__end-session {
   display: block;
   grid-column: 1 / -1;
+}
+
+body.is-focus-page .timer.is-focus .adjust {
+  max-width: 420px;
+  width: 100%;
+  margin: 0 auto;
 }
 
 @keyframes pulse {
@@ -399,6 +387,10 @@ body.is-focus-mode .timer:not(.is-focus) {
   50% {
     opacity: 0.45;
   }
+}
+
+.timer__end-session {
+  display: none;
 }
 
 .timer__clock {
@@ -524,13 +516,12 @@ body.is-focus-mode .timer:not(.is-focus) {
 .sync {
   display: grid;
   gap: 0.7rem;
-  max-width: 520px;
-  margin: 0 auto;
-  width: 100%;
-  padding: 0.95rem 1.1rem 1.05rem;
-  border-radius: 14px;
-  background: rgba(255, 255, 255, 0.03);
+  align-content: start;
+  padding: 1.35rem 1.25rem 1.25rem;
+  border-radius: var(--radius);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.015));
   border: 1px solid var(--line);
+  box-shadow: var(--shadow);
 }
 
 .sync__head {
@@ -620,6 +611,11 @@ body.is-focus-mode .timer:not(.is-focus) {
   font-size: 0.92rem;
   font-weight: 600;
   letter-spacing: 0.01em;
+  text-decoration: none;
+  color: inherit;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   transition:
     background 200ms var(--ease),
     color 200ms var(--ease),
@@ -673,15 +669,23 @@ body.is-focus-mode .timer:not(.is-focus) {
   color: var(--fog);
 }
 
-@media (max-width: 640px) {
-  .timer.is-focus .timer__clocks {
-    grid-template-columns: 1fr;
+@media (max-width: 980px) {
+  .timers {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .sync {
+    grid-column: 1 / -1;
   }
 }
 
 @media (max-width: 860px) {
   .timers {
     grid-template-columns: 1fr;
+  }
+
+  .sync {
+    grid-column: auto;
   }
 }
 
