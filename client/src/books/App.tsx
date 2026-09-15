@@ -9,16 +9,15 @@ export default function App() {
   const onBetterGpt = window.location.pathname.startsWith('/books')
 
   return (
-    <div className="app">
+    <>
+      {onBetterGpt ? (
+        <a className="home-link" href="/">
+          ← BetterGPT
+        </a>
+      ) : null}
+      <div className="app">
       <header className="masthead">
         <div className="masthead__bar">
-          {onBetterGpt ? (
-            <a className="home-link" href="/">
-              ← BetterGPT
-            </a>
-          ) : (
-            <span />
-          )}
           <button type="button" className="masthead__add" onClick={tracker.addGroup}>
             Add stack
           </button>
@@ -56,5 +55,6 @@ export default function App() {
       </p>
       <PinLock lock={lock} />
     </div>
+    </>
   )
 }
