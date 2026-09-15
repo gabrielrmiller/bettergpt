@@ -44,6 +44,12 @@ export default function App() {
           }
           onUpdateBook={(id, patch) => tracker.updateBook(group.id, id, patch)}
           onRemoveBook={(id) => tracker.removeBook(group.id, id)}
+          onMoveBook={(id, toGroupId) => tracker.moveBook(group.id, id, toGroupId)}
+          stacks={tracker.groups.map((item) => ({
+            id: item.id,
+            name: item.name,
+            deadline: item.deadline,
+          }))}
         />
       ))}
 

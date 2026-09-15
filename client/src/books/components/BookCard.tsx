@@ -1,5 +1,6 @@
+import { formatDateShort } from '../dates'
 import { bookPercent, dailyPagesFor, formatPages, remainingPagesFor } from '../pace'
-import type { Book } from '../types'
+import type { Book, StackChoice } from '../types'
 import { NumberField } from './NumberField'
 import { ProgressBar } from './ProgressBar'
 
@@ -8,8 +9,11 @@ const SPINE_COLORS = ['#8c3a3a', '#3f6b58', '#3a4a8c', '#8c5a2a', '#5a3a6b', '#2
 type BookCardProps = {
   book: Book
   daysLeft: number | null
+  stackId: string
+  stacks: StackChoice[]
   onUpdate: (id: string, patch: Partial<Omit<Book, 'id'>>) => void
   onRemove: (id: string) => void
+  onMove: (id: string, toGroupId: string) => void
 }
 
 function spineColor(id: string): string {
@@ -18,12 +22,26 @@ function spineColor(id: string): string {
   return SPINE_COLORS[hash]
 }
 
-export function BookCard({ book, daysLeft, onUpdate, onRemove }: BookCardProps) {
+function stackLabel(stack: StackChoice): string {
+  const name = stack.name.trim() || 'Untitled stack'
+  return stack.deadline ? `${name} · ${formatDateShort(stack.deadline)}` : name
+}
+
+export function BookCard({
+  book,
+  daysLeft,
+  stackId,
+  stacks,
+  onUpdate,
+  onRemove,
+  onMove,
+}: BookCardProps) {
   const remaining = remainingPagesFor(book)
   const done = remaining === 0
   const daily = dailyPagesFor(remaining, daysLeft)
   const percent = bookPercent(book)
   const color = spineColor(book.id)
+  const canMove = stacks.length > 1
 
   return (
     <article className={`book-card${done ? ' book-card--done' : ''}`}>
@@ -46,6 +64,25 @@ export function BookCard({ book, daysLeft, onUpdate, onRemove }: BookCardProps) 
             Remove
           </button>
         </header>
+
+        {canMove ? (
+          <label className="book-card__stack">
+            Stack
+            <select
+              value={stackId}
+              onChange={(event) => {
+                const next = event.target.value
+                if (next !== stackId) onMove(book.id, next)
+              }}
+            >
+              {stacks.map((stack) => (
+                <option key={stack.id} value={stack.id}>
+                  {stackLabel(stack)}
+                </option>
+              ))}
+            </select>
+          </label>
+        ) : null}
 
         <ProgressBar
           value={book.pagesRead}

@@ -13,6 +13,12 @@ export type BookGroup = {
   books: Book[]
 }
 
+export type StackChoice = {
+  id: string
+  name: string
+  deadline: string | null
+}
+
 export type TrackerState = {
   version: 2
   groups: BookGroup[]

@@ -1,5 +1,5 @@
 import { formatDate, formatPages } from '../pace'
-import type { Book, BookGroup, TrackerStats } from '../types'
+import type { Book, BookGroup, StackChoice, TrackerStats } from '../types'
 import { AddBookForm } from './AddBookForm'
 import { BookList } from './BookList'
 import { CumulativeProgress } from './CumulativeProgress'
@@ -16,6 +16,8 @@ type GroupCardProps = {
   onAddBook: (title: string, pageCount: number, pagesRead: number) => void
   onUpdateBook: (id: string, patch: Partial<Omit<Book, 'id'>>) => void
   onRemoveBook: (id: string) => void
+  onMoveBook: (id: string, toGroupId: string) => void
+  stacks: StackChoice[]
 }
 
 function summary(group: BookGroup, stats: TrackerStats): string {
@@ -40,6 +42,8 @@ export function GroupCard({
   onAddBook,
   onUpdateBook,
   onRemoveBook,
+  onMoveBook,
+  stacks,
 }: GroupCardProps) {
   const collapsed = group.collapsed
   const bodyId = `stack-body-${group.id}`
@@ -105,8 +109,10 @@ export function GroupCard({
           groupId={group.id}
           books={group.books}
           daysLeft={stats.daysLeft}
+          stacks={stacks}
           onUpdate={onUpdateBook}
           onRemove={onRemoveBook}
+          onMove={onMoveBook}
         />
       </div>
     </article>

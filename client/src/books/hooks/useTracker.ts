@@ -105,6 +105,30 @@ export function useTracker() {
     )
   }, [])
 
+  const moveBook = useCallback((fromGroupId: string, bookId: string, toGroupId: string) => {
+    if (fromGroupId === toGroupId) return
+    setState((current) => {
+      const source = current.groups.find((group) => group.id === fromGroupId)
+      const target = current.groups.find((group) => group.id === toGroupId)
+      const book = source?.books.find((item) => item.id === bookId)
+      if (!source || !target || !book) return current
+
+      return {
+        ...current,
+        groups: current.groups.map((group) => {
+          if (group.id === fromGroupId) {
+            return { ...group, books: group.books.filter((item) => item.id !== bookId) }
+          }
+          if (group.id === toGroupId) {
+            if (group.books.some((item) => item.id === bookId)) return group
+            return { ...group, books: [...group.books, book], collapsed: false }
+          }
+          return group
+        }),
+      }
+    })
+  }, [])
+
   const replaceState = useCallback((next: TrackerState) => {
     setState({
       version: 2,
@@ -133,5 +157,6 @@ export function useTracker() {
     addBook,
     updateBook,
     removeBook,
+    moveBook,
   }
 }
