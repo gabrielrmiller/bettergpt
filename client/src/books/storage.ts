@@ -51,6 +51,37 @@ export function emptyState(): TrackerState {
   }
 }
 
+export function parseTrackerState(value: unknown): TrackerState | null {
+  if (!value || typeof value !== 'object') return null
+  const parsed = value as Partial<TrackerState>
+  if (parsed.version !== 2 || !Array.isArray(parsed.groups)) return null
+  const groups = parsed.groups.filter(isGroup).map(normalizeGroup)
+  return groups.length > 0 ? { version: 2, groups } : emptyState()
+}
+
+export function hasTrackerData(state: TrackerState): boolean {
+  return state.groups.some(
+    (group) =>
+      group.books.length > 0 ||
+      Boolean(group.deadline) ||
+      (group.name.trim() !== '' && group.name !== 'Stack 1') ||
+      state.groups.length > 1,
+  )
+}
+
+export function trackerSnapshot(state: TrackerState): string {
+  return JSON.stringify({
+    version: 2,
+    groups: state.groups.map((group) => ({
+      id: group.id,
+      name: group.name,
+      deadline: group.deadline,
+      collapsed: group.collapsed,
+      books: group.books,
+    })),
+  })
+}
+
 function migrateV1(raw: string): TrackerState | null {
   try {
     const parsed = JSON.parse(raw) as { books?: unknown; deadline?: unknown }
@@ -78,8 +109,7 @@ export function loadState(): TrackerState {
     if (v2) {
       const parsed = JSON.parse(v2) as Partial<TrackerState>
       if (parsed?.version === 2 && Array.isArray(parsed.groups)) {
-        const groups = parsed.groups.filter(isGroup).map(normalizeGroup)
-        return groups.length > 0 ? { version: 2, groups } : emptyState()
+        return parseTrackerState(parsed) ?? emptyState()
       }
     }
 

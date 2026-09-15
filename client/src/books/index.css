@@ -67,7 +67,7 @@ p {
 .app {
   width: min(1080px, calc(100% - 32px));
   margin: 0 auto;
-  padding: 48px 0 72px;
+  padding: 48px 0 96px;
   display: grid;
   gap: 22px;
 }
@@ -546,6 +546,143 @@ p {
   color: var(--ink-soft);
   font-size: 0.9rem;
   padding: 4px 8px 0;
+}
+
+.pin-lock {
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  z-index: 40;
+  display: grid;
+  justify-items: end;
+  gap: 10px;
+}
+
+.pin-lock__token {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 14px 0 10px;
+  border: 1px solid #c9a36a;
+  border-radius: 999px;
+  background: #f7efe0;
+  color: var(--burgundy);
+  box-shadow: 0 10px 24px rgba(58, 38, 18, 0.16);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.pin-lock__token svg {
+  width: 22px;
+  height: 22px;
+}
+
+.pin-lock__token:hover,
+.pin-lock__token[aria-expanded='true'] {
+  background: #fff8ea;
+}
+
+.pin-lock__token.is-locked {
+  background: var(--burgundy);
+  border-color: var(--burgundy-deep);
+  color: #fbf6ea;
+}
+
+.pin-lock__panel {
+  width: min(320px, calc(100vw - 36px));
+  padding: 16px;
+  border: 1px solid var(--rule);
+  border-radius: 18px;
+  background: var(--sheet);
+  box-shadow: var(--shadow);
+  display: grid;
+  gap: 10px;
+}
+
+.pin-lock__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.pin-lock__label {
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.pin-lock__badge {
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--sage);
+}
+
+.pin-lock__hint,
+.pin-lock__status {
+  color: var(--ink-soft);
+  font-size: 0.82rem;
+  line-height: 1.4;
+}
+
+.pin-lock__form {
+  display: grid;
+  gap: 10px;
+}
+
+.pin-lock__field {
+  display: grid;
+  gap: 6px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--ink-soft);
+}
+
+.pin-lock__field input {
+  width: 100%;
+  border: 1px solid var(--rule);
+  border-radius: 12px;
+  background: #fffdf7;
+  padding: 10px 12px;
+  letter-spacing: 0.08em;
+}
+
+.pin-lock__field input:focus {
+  outline: 2px solid color-mix(in srgb, var(--burgundy) 35%, transparent);
+  outline-offset: 1px;
+}
+
+.pin-lock__actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.pin-lock__actions button {
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  background: #f7efe0;
+  padding: 8px 10px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.pin-lock__actions button:hover:not(:disabled) {
+  background: #fff8ea;
+}
+
+.pin-lock__actions button:disabled {
+  opacity: 0.6;
+  cursor: wait;
 }
 
 .visually-hidden {

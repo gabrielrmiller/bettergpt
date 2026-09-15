@@ -85,21 +85,28 @@ function whenApi(): Plugin {
         if (
           pathname !== "/api/availability/poll" &&
           pathname !== "/api/availability/people" &&
-          pathname !== "/api/timer/sync"
+          pathname !== "/api/timer/sync" &&
+          pathname !== "/api/books/sync"
         ) {
           next()
           return
         }
 
         try {
-          if (pathname === "/api/timer/sync") {
+          if (pathname === "/api/timer/sync" || pathname === "/api/books/sync") {
             if (req.method !== "POST") {
               res.setHeader("Allow", "POST")
               sendJson(res, 405, { error: "Method not allowed." })
               return
             }
-            const { enforceRateLimit, handleTimer } = await import("./api/timer/_store.js")
             const body = await readJsonBody(req)
+            if (pathname === "/api/books/sync") {
+              const { enforceRateLimit, handleBooks } = await import("./api/books/_store.js")
+              await enforceRateLimit("local")
+              sendJson(res, 200, await handleBooks(body))
+              return
+            }
+            const { enforceRateLimit, handleTimer } = await import("./api/timer/_store.js")
             await enforceRateLimit("local")
             sendJson(res, 200, await handleTimer(body))
             return

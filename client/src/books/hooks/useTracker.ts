@@ -105,6 +105,13 @@ export function useTracker() {
     )
   }, [])
 
+  const replaceState = useCallback((next: TrackerState) => {
+    setState({
+      version: 2,
+      groups: next.groups.length > 0 ? next.groups : [createGroup('Stack 1')],
+    })
+  }, [])
+
   const groupStats = useMemo(
     () =>
       Object.fromEntries(
@@ -115,7 +122,9 @@ export function useTracker() {
 
   return {
     groups: state.groups,
+    state,
     groupStats,
+    replaceState,
     addGroup,
     removeGroup,
     renameGroup,

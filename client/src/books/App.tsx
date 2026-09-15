@@ -1,8 +1,11 @@
 import { GroupCard } from './components/GroupCard'
+import { PinLock } from './components/PinLock'
+import { usePinLock } from './hooks/usePinLock'
 import { useTracker } from './hooks/useTracker'
 
 export default function App() {
   const tracker = useTracker()
+  const lock = usePinLock(tracker.state, tracker.replaceState)
   const onBetterGpt = window.location.pathname.startsWith('/books')
 
   return (
@@ -42,7 +45,13 @@ export default function App() {
         />
       ))}
 
-      <p className="footnote">Saved on this device. Each stack has its own deadline and pace.</p>
+      <p className="footnote">
+        {lock.linked
+          ? 'Locked to your PIN, so stacks follow you across devices.'
+          : 'Saved on this device until you lock a PIN in the corner.'}{' '}
+        Each stack has its own deadline and pace.
+      </p>
+      <PinLock lock={lock} />
     </div>
   )
 }
