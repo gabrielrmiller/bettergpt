@@ -47,8 +47,8 @@ export default function App() {
 
       <p className="footnote">
         {lock.linked
-          ? 'Locked to your PIN, so stacks follow you across devices.'
-          : 'Saved on this device until you lock a PIN in the corner.'}{' '}
+          ? 'These stacks follow your key across devices.'
+          : 'Saved on this device. Set a key to keep them in sync.'}{' '}
         Each stack has its own deadline and pace.
       </p>
       <PinLock lock={lock} />

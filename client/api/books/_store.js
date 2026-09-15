@@ -141,7 +141,7 @@ export function sanitizeState(value) {
     };
   }
   const encoded = JSON.stringify({ version: 2, groups });
-  if (encoded.length > MAX_BYTES) fail(413, "Too many books for one PIN.");
+  if (encoded.length > MAX_BYTES) fail(413, "Too many books for one key.");
   return { version: 2, groups };
 }
 
@@ -198,7 +198,7 @@ export async function writeBooks(key, rawState) {
 export async function handleBooks(body) {
   const action = String(body?.action || "").trim();
   const key = normalizeKey(body?.key);
-  if (!key) fail(400, "Enter a PIN.");
+  if (!key) fail(400, "Enter a key.");
 
   if (action === "get") return readBooks(key);
   if (action === "put") return writeBooks(key, body?.state);

@@ -586,7 +586,7 @@ p {
   background: #fff8ea;
 }
 
-.pin-lock__token.is-locked {
+.pin-lock__token.is-linked {
   background: var(--burgundy);
   border-color: var(--burgundy-deep);
   color: #fbf6ea;

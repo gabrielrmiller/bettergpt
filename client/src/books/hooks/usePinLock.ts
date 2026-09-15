@@ -9,8 +9,8 @@ export function usePinLock(state: TrackerState, replaceState: (next: TrackerStat
   const [pin, setPin] = useState(loadPin)
   const [status, setStatus] = useState(() =>
     loadPin()
-      ? 'Locked. Books follow this PIN across devices.'
-      : 'Books stay on this browser until you lock a PIN.',
+      ? 'Linked. These stacks follow this key across devices.'
+      : 'Stacks stay on this browser until you set a key.',
   )
   const [busy, setBusy] = useState(false)
   const skipPushRef = useRef(false)
@@ -25,7 +25,7 @@ export function usePinLock(state: TrackerState, replaceState: (next: TrackerStat
     const currentPin = pinRef.current
     if (!currentPin) return
     await syncBooks('put', currentPin, stateRef.current)
-    setStatus('Locked. Books follow this PIN across devices.')
+    setStatus('Linked. These stacks follow this key across devices.')
   }, [])
 
   const applyRemote = useCallback(
@@ -39,7 +39,7 @@ export function usePinLock(state: TrackerState, replaceState: (next: TrackerStat
   const linkPin = useCallback(
     async (rawPin: string) => {
       const nextPin = validPin(rawPin)
-      if (!nextPin) throw new Error('Enter a PIN first.')
+      if (!nextPin) throw new Error('Enter a key first.')
 
       const previous = pinRef.current
       setPin(nextPin)
@@ -62,7 +62,7 @@ export function usePinLock(state: TrackerState, replaceState: (next: TrackerStat
 
       if (remoteHasData && remote.state && !same && localHasData) {
         const useCloud = window.confirm(
-          "This PIN already has books saved. This device also has books. OK loads the PIN's books. Cancel keeps this device and overwrites the PIN.",
+          "This key already has stacks saved. This device also has stacks. OK uses the key's books. Cancel keeps this device and overwrites the key.",
         )
         if (useCloud) applyRemote(remote.state)
       } else if (remote.found && remote.state && !localHasData) {
@@ -71,7 +71,7 @@ export function usePinLock(state: TrackerState, replaceState: (next: TrackerStat
 
       savePin(nextPin)
       if (!remote.found || localHasData) await pushCloud()
-      setStatus('Locked. Books follow this PIN across devices.')
+      setStatus('Linked. These stacks follow this key across devices.')
     },
     [applyRemote, pushCloud],
   )
@@ -80,7 +80,7 @@ export function usePinLock(state: TrackerState, replaceState: (next: TrackerStat
     setPin('')
     pinRef.current = ''
     savePin('')
-    setStatus('Forgotten on this device. Cloud books stay until someone uses the PIN.')
+    setStatus('Forgotten on this device. Synced stacks stay until someone uses the key.')
   }, [])
 
   useEffect(() => {
@@ -98,10 +98,10 @@ export function usePinLock(state: TrackerState, replaceState: (next: TrackerStat
         if (cancelled) return
         if (remote.found && remote.state) applyRemote(remote.state)
         else await pushCloud()
-        if (!cancelled) setStatus('Locked. Books follow this PIN across devices.')
+        if (!cancelled) setStatus('Linked. These stacks follow this key across devices.')
       } catch (error) {
         if (!cancelled) {
-          setStatus(error instanceof Error ? error.message : 'Could not load this PIN.')
+          setStatus(error instanceof Error ? error.message : 'Could not load this key.')
         }
       } finally {
         readyRef.current = true
@@ -123,7 +123,7 @@ export function usePinLock(state: TrackerState, replaceState: (next: TrackerStat
 
     const timer = window.setTimeout(() => {
       pushCloud().catch((error: unknown) => {
-        setStatus(error instanceof Error ? error.message : 'Could not save to your PIN.')
+        setStatus(error instanceof Error ? error.message : 'Could not save to your key.')
       })
     }, PUSH_DELAY_MS)
 

@@ -28,12 +28,12 @@ export function PinLock({ lock }: { lock: PinLockHandle }) {
   async function submit(event: FormEvent) {
     event.preventDefault()
     lock.setBusy(true)
-    lock.setStatus('Locking PIN…')
+    lock.setStatus('Linking key…')
     try {
       await lock.linkPin(draft)
       setOpen(false)
     } catch (error) {
-      lock.setStatus(error instanceof Error ? error.message : 'Could not lock this PIN.')
+      lock.setStatus(error instanceof Error ? error.message : 'Could not link this key.')
     } finally {
       lock.setBusy(false)
     }
@@ -42,34 +42,34 @@ export function PinLock({ lock }: { lock: PinLockHandle }) {
   async function copyPin() {
     const value = draft.trim() || lock.pin
     if (!value) {
-      lock.setStatus('Generate or type a PIN first.')
+      lock.setStatus('Generate or type a key first.')
       return
     }
     try {
       await navigator.clipboard.writeText(value)
-      lock.setStatus('Copied. Keep this PIN private.')
+      lock.setStatus('Copied. Keep this key private.')
     } catch {
-      lock.setStatus('Copy failed. Select the PIN and copy it yourself.')
+      lock.setStatus('Copy failed. Select the key and copy it yourself.')
     }
   }
 
   return (
     <div className="pin-lock" ref={rootRef}>
       {open ? (
-        <section className="pin-lock__panel" role="dialog" aria-label="Book PIN">
+        <section className="pin-lock__panel" role="dialog" aria-label="Device key">
           <div className="pin-lock__head">
-            <p className="pin-lock__label">Book PIN</p>
-            {lock.linked ? <span className="pin-lock__badge">Locked</span> : null}
+            <p className="pin-lock__label">Device key</p>
+            {lock.linked ? <span className="pin-lock__badge">Linked</span> : null}
           </div>
           <p className="pin-lock__hint">
-            One PIN loads and locks these stacks on any device. Anyone with it can change them.
+            One key keeps these stacks in sync on every device. Anyone with it can change them.
           </p>
           <form className="pin-lock__form" onSubmit={submit}>
             <label className="pin-lock__field">
-              <span>PIN</span>
+              <span>Key</span>
               <input
                 type={reveal ? 'text' : 'password'}
-                name="book-pin"
+                name="book-key"
                 autoComplete="off"
                 spellCheck={false}
                 maxLength={128}
@@ -88,13 +88,13 @@ export function PinLock({ lock }: { lock: PinLockHandle }) {
                   const next = lock.generatePin()
                   setDraft(next)
                   setReveal(true)
-                  lock.setStatus('Copy this PIN, then click Use PIN.')
+                  lock.setStatus('Copy this key, then click Use key.')
                 }}
               >
-                New PIN
+                New key
               </button>
               <button type="submit" disabled={lock.busy}>
-                Use PIN
+                Use key
               </button>
               <button type="button" disabled={lock.busy} onClick={() => void copyPin()}>
                 Copy
@@ -118,9 +118,9 @@ export function PinLock({ lock }: { lock: PinLockHandle }) {
 
       <button
         type="button"
-        className={`pin-lock__token${lock.linked ? ' is-locked' : ''}`}
+        className={`pin-lock__token${lock.linked ? ' is-linked' : ''}`}
         aria-expanded={open}
-        aria-label={lock.linked ? 'Book PIN locked' : 'Lock books with a PIN'}
+        aria-label={lock.linked ? 'Device key linked' : 'Sync stacks with a device key'}
         onClick={(event) => {
           event.stopPropagation()
           setOpen((current) => !current)
@@ -139,7 +139,7 @@ export function PinLock({ lock }: { lock: PinLockHandle }) {
             />
           )}
         </svg>
-        <span>{lock.linked ? 'Locked' : 'PIN'}</span>
+        <span>{lock.linked ? 'Linked' : 'Key'}</span>
       </button>
     </div>
   )
