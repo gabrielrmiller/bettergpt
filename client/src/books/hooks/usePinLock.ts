@@ -10,7 +10,7 @@ export function usePinLock(state: TrackerState, replaceState: (next: TrackerStat
   const [status, setStatus] = useState(() =>
     loadPin()
       ? 'Linked. These stacks follow this key across devices.'
-      : 'Stacks stay on this browser until you set a key.',
+      : 'Type a key or generate one.',
   )
   const [busy, setBusy] = useState(false)
   const skipPushRef = useRef(false)

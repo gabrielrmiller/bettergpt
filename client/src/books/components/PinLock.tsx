@@ -7,8 +7,8 @@ export function PinLock({ lock }: { lock: PinLockHandle }) {
   const [open, setOpen] = useState(false)
   const [draft, setDraft] = useState(lock.pin)
   const [focused, setFocused] = useState(false)
-  const [reveal, setReveal] = useState(false)
   const rootRef = useRef<HTMLDivElement>(null)
+  const inputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     if (!focused) setDraft(lock.pin)
@@ -22,7 +22,14 @@ export function PinLock({ lock }: { lock: PinLockHandle }) {
     }
 
     document.addEventListener('keydown', onKeyDown)
-    return () => document.removeEventListener('keydown', onKeyDown)
+    const frame = window.requestAnimationFrame(() => {
+      inputRef.current?.focus()
+      inputRef.current?.select()
+    })
+    return () => {
+      document.removeEventListener('keydown', onKeyDown)
+      window.cancelAnimationFrame(frame)
+    }
   }, [open])
 
   async function submit(event: FormEvent) {
@@ -39,10 +46,10 @@ export function PinLock({ lock }: { lock: PinLockHandle }) {
     }
   }
 
-  async function copyPin() {
+  async function copyKey() {
     const value = draft.trim() || lock.pin
     if (!value) {
-      lock.setStatus('Generate or type a key first.')
+      lock.setStatus('Type or generate a key first.')
       return
     }
     try {
@@ -62,15 +69,19 @@ export function PinLock({ lock }: { lock: PinLockHandle }) {
             {lock.linked ? <span className="pin-lock__badge">Linked</span> : null}
           </div>
           <p className="pin-lock__hint">
-            One key keeps these stacks in sync on every device. Anyone with it can change them.
+            Type a key or generate one. It keeps these stacks in sync on every device. Anyone with
+            it can change them.
           </p>
           <form className="pin-lock__form" onSubmit={submit}>
             <label className="pin-lock__field">
               <span>Key</span>
               <input
-                type={reveal ? 'text' : 'password'}
+                ref={inputRef}
+                type="text"
                 name="book-key"
                 autoComplete="off"
+                autoCapitalize="off"
+                autoCorrect="off"
                 spellCheck={false}
                 maxLength={128}
                 value={draft}
@@ -87,16 +98,16 @@ export function PinLock({ lock }: { lock: PinLockHandle }) {
                 onClick={() => {
                   const next = lock.generatePin()
                   setDraft(next)
-                  setReveal(true)
                   lock.setStatus('Copy this key, then click Use key.')
+                  window.requestAnimationFrame(() => inputRef.current?.select())
                 }}
               >
-                New key
+                Generate
               </button>
               <button type="submit" disabled={lock.busy}>
                 Use key
               </button>
-              <button type="button" disabled={lock.busy} onClick={() => void copyPin()}>
+              <button type="button" disabled={lock.busy} onClick={() => void copyKey()}>
                 Copy
               </button>
               <button
@@ -105,7 +116,6 @@ export function PinLock({ lock }: { lock: PinLockHandle }) {
                 onClick={() => {
                   lock.forgetPin()
                   setDraft('')
-                  setReveal(false)
                 }}
               >
                 Forget

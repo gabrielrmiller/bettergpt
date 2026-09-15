@@ -652,7 +652,8 @@ p {
   border-radius: 12px;
   background: #fffdf7;
   padding: 10px 12px;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.04em;
+  font-variant-ligatures: none;
 }
 
 .pin-lock__field input:focus {
