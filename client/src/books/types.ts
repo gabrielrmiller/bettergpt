@@ -9,6 +9,7 @@ export type BookGroup = {
   id: string
   name: string
   deadline: string | null
+  collapsed: boolean
   books: Book[]
 }
 

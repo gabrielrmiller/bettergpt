@@ -32,6 +32,7 @@ export default function App() {
           canRemove={tracker.groups.length > 1}
           onRename={(name) => tracker.renameGroup(group.id, name)}
           onRemove={() => tracker.removeGroup(group.id)}
+          onToggle={() => tracker.toggleGroup(group.id)}
           onDeadlineChange={(deadline) => tracker.setDeadline(group.id, deadline)}
           onAddBook={(title, pageCount, pagesRead) =>
             tracker.addBook(group.id, title, pageCount, pagesRead)

@@ -55,6 +55,12 @@ export function useTracker() {
     setState((current) => mapGroup(current, groupId, (group) => ({ ...group, name })))
   }, [])
 
+  const toggleGroup = useCallback((groupId: string) => {
+    setState((current) =>
+      mapGroup(current, groupId, (group) => ({ ...group, collapsed: !group.collapsed })),
+    )
+  }, [])
+
   const setDeadline = useCallback((groupId: string, deadline: string | null) => {
     setState((current) =>
       mapGroup(current, groupId, (group) => ({
@@ -113,6 +119,7 @@ export function useTracker() {
     addGroup,
     removeGroup,
     renameGroup,
+    toggleGroup,
     setDeadline,
     addBook,
     updateBook,

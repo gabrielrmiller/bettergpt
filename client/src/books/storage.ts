@@ -26,12 +26,21 @@ function isGroup(value: unknown): value is BookGroup {
   )
 }
 
+function normalizeGroup(group: BookGroup): BookGroup {
+  return {
+    ...group,
+    collapsed: group.collapsed === true,
+    books: [...group.books],
+  }
+}
+
 export function createGroup(name: string, deadline: string | null = null, books: Book[] = []): BookGroup {
   return {
     id: crypto.randomUUID(),
     name,
     deadline,
-    books,
+    collapsed: false,
+    books: [...books],
   }
 }
 
@@ -69,7 +78,7 @@ export function loadState(): TrackerState {
     if (v2) {
       const parsed = JSON.parse(v2) as Partial<TrackerState>
       if (parsed?.version === 2 && Array.isArray(parsed.groups)) {
-        const groups = parsed.groups.filter(isGroup)
+        const groups = parsed.groups.filter(isGroup).map(normalizeGroup)
         return groups.length > 0 ? { version: 2, groups } : emptyState()
       }
     }
