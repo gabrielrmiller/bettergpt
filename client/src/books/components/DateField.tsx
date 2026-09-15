@@ -33,6 +33,7 @@ export function DateField({ id, value, onChange }: DateFieldProps) {
     if (part === 'day') setDay(next)
     if (part === 'month') setMonth(next)
     if (part === 'year') setYear(next)
+    commit()
   }
 
   function commit() {
