@@ -107,6 +107,9 @@ function App() {
           <a href="/mas-i/" className={`when-free-link rounded-lg p-2 ${isCollapsed ? 'w-[80%]' : 'w-[95%]'} h-10 hover:bg-sidebar-hover`}>
             <span className={`left-4 text-xl before:mr-4 before:content-['⏱️'] fixed font-semibold text-[14px]`}>MAS-I Timer</span>
           </a>
+          <a href="/books" className={`when-free-link rounded-lg p-2 ${isCollapsed ? 'w-[80%]' : 'w-[95%]'} h-10 hover:bg-sidebar-hover`}>
+            <span className={`left-4 text-xl before:mr-4 before:content-['📖'] fixed font-semibold text-[14px]`}>Book tracker</span>
+          </a>
         </div>
       </div>
       <div className='flex flex-col flex-grow min-h-full bg-main-bg z-20 justify-center items-center gap-10 box-border'>
@@ -114,6 +117,7 @@ function App() {
         <div className="flex gap-4 md:hidden">
           <a className="when-free-link text-sm text-[#c5c5c5] hover:text-white font-semibold" href="/when">When we're free</a>
           <a className="when-free-link text-sm text-[#c5c5c5] hover:text-white font-semibold" href="/mas-i/">MAS-I Timer</a>
+          <a className="when-free-link text-sm text-[#c5c5c5] hover:text-white font-semibold" href="/books">Book tracker</a>
         </div>
         {loading ? ( <p className='text-gray-300'>Thinking...</p>) : reply ? ( <div className='text-green-400 w-[90%] text-center'> <p>{reply}</p></div>) : null}
 

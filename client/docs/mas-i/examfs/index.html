@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#0e1419" />
+    <base href="/mas-i/" />
+    <link rel="icon" href="/mas-i/favicon.svg" type="image/svg+xml" />
+    <title>MAS-I Timer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;500;600&family=Syne:wght@700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/mas-i/styles.css" />
+  </head>
+  <body>
+    <div class="atmosphere" aria-hidden="true"></div>
+
+    <main class="app">
+      <header class="brand">
+        <p class="brand__mark">CAS · Modern Actuarial Statistics I</p>
+        <h1 class="brand__title">MAS-I</h1>
+        <p class="brand__sub">Study hour tracker</p>
+      </header>
+
+      <section class="totals" aria-label="Lifetime totals">
+        <div class="total">
+          <span class="total__label">All time</span>
+          <time class="total__value" id="grand-total" datetime="PT0S">00:00:00</time>
+        </div>
+        <div class="total total--session">
+          <span class="total__label">This session</span>
+          <time class="total__value" id="session-total" datetime="PT0S">00:00:00</time>
+          <button type="button" class="btn btn--ghost total__end" id="end-session" data-end-session disabled>
+            End session
+          </button>
+        </div>
+      </section>
+
+      <section class="timers" aria-label="Category stopwatches">
+        <article class="timer" data-category="study">
+          <div class="timer__head">
+            <h2 class="timer__name">Study</h2>
+            <div class="timer__meta">
+              <span class="timer__status" data-status>Ready</span>
+              <a
+                class="btn btn--ghost btn--icon"
+                data-fullscreen
+                href="studyfs/"
+                title="Open study focus page"
+                aria-label="Open study focus page"
+              >
+                Focus
+              </a>
+            </div>
+          </div>
+          <div class="timer__clock">
+            <span class="timer__clock-label" data-clock-label>All time</span>
+            <time class="timer__display" data-display datetime="PT0S">00:00:00</time>
+          </div>
+          <div class="timer__totals">
+            <div class="timer__total">
+              <span class="timer__total-label" data-secondary-label>This session</span>
+              <time class="timer__total-value" data-all-time datetime="PT0S">00:00:00</time>
+            </div>
+          </div>
+          <div class="timer__actions">
+            <button type="button" class="btn btn--primary" data-toggle>Start</button>
+            <button type="button" class="btn btn--ghost" data-adjust title="Adjust study time">
+              Adjust
+            </button>
+            <button type="button" class="btn btn--ghost" data-reset title="Reset study time">
+              Reset
+            </button>
+            <button type="button" class="btn btn--ghost timer__end-session" data-end-session disabled>
+              End session
+            </button>
+          </div>
+          <form class="adjust" data-adjust-form hidden>
+            <p class="adjust__label">Correct accidental time</p>
+            <div class="adjust__fields">
+              <label>
+                <span>Hours</span>
+                <input type="number" min="0" step="1" value="0" data-hours />
+              </label>
+              <label>
+                <span>Minutes</span>
+                <input type="number" min="0" max="59" step="1" value="0" data-minutes />
+              </label>
+            </div>
+            <div class="adjust__actions">
+              <button type="submit" class="btn btn--ghost" data-adjust-dir="-1">Subtract</button>
+              <button type="submit" class="btn btn--ghost" data-adjust-dir="1">Add</button>
+              <button type="button" class="btn btn--ghost" data-adjust-cancel>Cancel</button>
+            </div>
+          </form>
+        </article>
+
+        <article class="timer" data-category="practice">
+          <div class="timer__head">
+            <h2 class="timer__name">Practice</h2>
+            <div class="timer__meta">
+              <span class="timer__status" data-status>Ready</span>
+              <a
+                class="btn btn--ghost btn--icon"
+                data-fullscreen
+                href="examfs/"
+                title="Open practice focus page"
+                aria-label="Open practice focus page"
+              >
+                Focus
+              </a>
+            </div>
+          </div>
+          <div class="timer__clock">
+            <span class="timer__clock-label" data-clock-label>All time</span>
+            <time class="timer__display" data-display datetime="PT0S">00:00:00</time>
+          </div>
+          <div class="timer__totals">
+            <div class="timer__total">
+              <span class="timer__total-label" data-secondary-label>This session</span>
+              <time class="timer__total-value" data-all-time datetime="PT0S">00:00:00</time>
+            </div>
+          </div>
+          <div class="timer__actions">
+            <button type="button" class="btn btn--primary" data-toggle>Start</button>
+            <button type="button" class="btn btn--ghost" data-adjust title="Adjust practice time">
+              Adjust
+            </button>
+            <button type="button" class="btn btn--ghost" data-reset title="Reset practice time">
+              Reset
+            </button>
+            <button type="button" class="btn btn--ghost timer__end-session" data-end-session disabled>
+              End session
+            </button>
+          </div>
+          <form class="adjust" data-adjust-form hidden>
+            <p class="adjust__label">Correct accidental time</p>
+            <div class="adjust__fields">
+              <label>
+                <span>Hours</span>
+                <input type="number" min="0" step="1" value="0" data-hours />
+              </label>
+              <label>
+                <span>Minutes</span>
+                <input type="number" min="0" max="59" step="1" value="0" data-minutes />
+              </label>
+            </div>
+            <div class="adjust__actions">
+              <button type="submit" class="btn btn--ghost" data-adjust-dir="-1">Subtract</button>
+              <button type="submit" class="btn btn--ghost" data-adjust-dir="1">Add</button>
+              <button type="button" class="btn btn--ghost" data-adjust-cancel>Cancel</button>
+            </div>
+          </form>
+        </article>
+
+        <section class="sync" aria-label="Device key">
+          <div class="sync__head">
+            <p class="sync__label">Device key</p>
+            <span class="sync__badge" data-sync-badge hidden>Linked</span>
+          </div>
+          <p class="sync__hint">
+            One key keeps Study and Practice in sync across your devices. Anyone with it can change
+            both totals.
+          </p>
+          <form class="sync__form" data-sync-form>
+            <label class="sync__key">
+              <span>Key</span>
+              <input
+                type="password"
+                name="sync-key"
+                autocomplete="off"
+                spellcheck="false"
+                maxlength="128"
+                data-sync-key
+              />
+            </label>
+            <div class="sync__actions">
+              <button type="button" class="btn btn--ghost" data-sync-generate>New key</button>
+              <button type="submit" class="btn btn--ghost">Use key</button>
+              <button type="button" class="btn btn--ghost" data-sync-copy>Copy</button>
+              <button type="button" class="btn btn--ghost" data-sync-forget>Forget</button>
+            </div>
+            <p class="sync__status" data-sync-status>
+              Hours stay on this browser until you set a key.
+            </p>
+          </form>
+        </section>
+      </section>
+
+      <footer class="footnote">
+        <p>
+          Starting one timer pauses the other. End session to zero session clocks without touching
+          all-time hours. Use Adjust if you forgot to pause. Set one device key to keep both timers
+          in sync across devices.
+        </p>
+      </footer>
+    </main>
+
+    <script src="/mas-i/app.js"></script>
+  </body>
+</html>

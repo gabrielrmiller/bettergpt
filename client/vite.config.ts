@@ -9,6 +9,7 @@ const isGitHubPages = process.env.VITE_GH_PAGES === 'true'
 
 function rewriteWhenPage(req: IncomingMessage, res: ServerResponse, next: () => void) {
   if (req.url === '/when' || req.url === '/when/') req.url = '/when.html'
+  if (req.url === '/books' || req.url === '/books/') req.url = '/books.html'
   if (req.url === '/mas-i') {
     res.writeHead(308, { Location: '/mas-i/' })
     res.end()
@@ -144,6 +145,7 @@ export default defineConfig({
       input: {
         main: fileURLToPath(new URL('index.html', import.meta.url)),
         when: fileURLToPath(new URL('when.html', import.meta.url)),
+        books: fileURLToPath(new URL('books.html', import.meta.url)),
       },
     },
   },
