@@ -77,9 +77,16 @@ p {
   border-bottom: 1px solid var(--rule);
 }
 
-.home-link {
-  display: inline-block;
+.masthead__bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 44px;
   margin-bottom: 10px;
+}
+
+.home-link {
   color: var(--burgundy);
   font-weight: 700;
   text-decoration: none;
@@ -101,12 +108,13 @@ p {
 }
 
 .masthead__add {
-  margin-top: 18px;
+  flex-shrink: 0;
+  margin-left: auto;
   border: 0;
   background: var(--burgundy);
   color: #fbf6ea;
-  border-radius: 12px;
-  padding: 12px 16px;
+  border-radius: 999px;
+  padding: 8px 14px;
   font-weight: 700;
   cursor: pointer;
 }

@@ -11,20 +11,24 @@ export default function App() {
   return (
     <div className="app">
       <header className="masthead">
-        {onBetterGpt ? (
-          <a className="home-link" href="/">
-            ← BetterGPT
-          </a>
-        ) : null}
+        <div className="masthead__bar">
+          {onBetterGpt ? (
+            <a className="home-link" href="/">
+              ← BetterGPT
+            </a>
+          ) : (
+            <span />
+          )}
+          <button type="button" className="masthead__add" onClick={tracker.addGroup}>
+            Add stack
+          </button>
+        </div>
         <p className="eyebrow">Reading journal</p>
         <h1>Book tracker</h1>
         <p className="masthead__lede">
           Keep separate stacks with their own finish dates. Add titles, log pages,
           and see how many pages a day each stack needs.
         </p>
-        <button type="button" className="masthead__add" onClick={tracker.addGroup}>
-          Add another stack
-        </button>
       </header>
 
       {tracker.groups.map((group) => (
