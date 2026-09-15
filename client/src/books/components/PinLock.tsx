@@ -17,20 +17,12 @@ export function PinLock({ lock }: { lock: PinLockHandle }) {
   useEffect(() => {
     if (!open) return
 
-    function onPointerDown(event: PointerEvent) {
-      if (!rootRef.current?.contains(event.target as Node)) setOpen(false)
-    }
-
     function onKeyDown(event: KeyboardEvent) {
       if (event.key === 'Escape') setOpen(false)
     }
 
-    document.addEventListener('pointerdown', onPointerDown)
     document.addEventListener('keydown', onKeyDown)
-    return () => {
-      document.removeEventListener('pointerdown', onPointerDown)
-      document.removeEventListener('keydown', onKeyDown)
-    }
+    return () => document.removeEventListener('keydown', onKeyDown)
   }, [open])
 
   async function submit(event: FormEvent) {
@@ -129,7 +121,10 @@ export function PinLock({ lock }: { lock: PinLockHandle }) {
         className={`pin-lock__token${lock.linked ? ' is-locked' : ''}`}
         aria-expanded={open}
         aria-label={lock.linked ? 'Book PIN locked' : 'Lock books with a PIN'}
-        onClick={() => setOpen((current) => !current)}
+        onClick={(event) => {
+          event.stopPropagation()
+          setOpen((current) => !current)
+        }}
       >
         <svg viewBox="0 0 24 24" aria-hidden="true">
           {lock.linked ? (
