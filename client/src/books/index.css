@@ -66,15 +66,15 @@ p {
 }
 
 .app {
-  width: min(1080px, calc(100% - 32px));
+  width: min(1080px, calc(100% - 24px));
   margin: 0 auto;
-  padding: 48px 0 96px;
+  padding: 36px 0 80px;
   display: grid;
-  gap: 22px;
+  gap: 18px;
 }
 
 .masthead {
-  padding: 8px 4px 12px;
+  padding: 4px 0 10px;
   border-bottom: 1px solid var(--rule);
 }
 
@@ -82,16 +82,16 @@ p {
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  min-height: 44px;
-  margin-bottom: 10px;
+  min-height: 36px;
+  margin-bottom: 6px;
 }
 
 .home-link {
   position: absolute;
-  top: 10px;
-  left: 12px;
+  top: 8px;
+  left: 10px;
   z-index: 5;
-  padding: 6px 2px;
+  padding: 4px 2px;
   color: var(--burgundy);
   font-weight: 700;
   font-size: 0.92rem;
@@ -103,8 +103,8 @@ p {
 }
 
 .masthead h1 {
-  font-size: clamp(2.6rem, 6vw, 4.4rem);
-  margin: 6px 0 12px;
+  font-size: clamp(2.4rem, 6vw, 4.4rem);
+  margin: 4px 0 10px;
 }
 
 .masthead__lede {
@@ -131,7 +131,7 @@ p {
 .group {
   display: grid;
   gap: 16px;
-  padding: 22px;
+  padding: 20px;
   border: 1px solid rgba(90, 60, 30, 0.1);
   border-radius: 28px;
   background: rgba(255, 253, 247, 0.4);
@@ -238,7 +238,7 @@ p {
   display: grid;
   grid-template-columns: 1.4fr 0.8fr;
   gap: 20px 28px;
-  padding: 28px;
+  padding: 22px 24px;
 }
 
 .pace__main h2 {
@@ -369,7 +369,7 @@ p {
 .add-book,
 .empty,
 .stack {
-  padding: 24px 28px;
+  padding: 22px 24px;
 }
 
 .cumulative {
@@ -569,8 +569,8 @@ p {
 
 .pin-lock {
   position: fixed;
-  right: 18px;
-  bottom: 18px;
+  right: 12px;
+  bottom: 12px;
   z-index: 40;
   display: grid;
   justify-items: end;
@@ -612,7 +612,7 @@ p {
 }
 
 .pin-lock__panel {
-  width: min(320px, calc(100vw - 36px));
+  width: min(320px, calc(100vw - 24px));
   padding: 16px;
   border: 1px solid var(--rule);
   border-radius: 18px;
@@ -738,8 +738,33 @@ p {
 
 @media (max-width: 560px) {
   .app {
-    width: min(100% - 20px, 1080px);
-    padding-top: 28px;
+    width: min(100% - 16px, 1080px);
+    padding: 14px 0 72px;
+    gap: 14px;
+  }
+
+  .home-link {
+    top: 6px;
+    left: 8px;
+    font-size: 0.86rem;
+  }
+
+  .masthead {
+    padding: 2px 0 8px;
+  }
+
+  .masthead__bar {
+    min-height: 32px;
+    margin-bottom: 2px;
+  }
+
+  .masthead h1 {
+    font-size: clamp(2rem, 11vw, 2.8rem);
+    margin: 2px 0 8px;
+  }
+
+  .masthead__lede {
+    font-size: 0.98rem;
   }
 
   .pace,
@@ -748,7 +773,16 @@ p {
   .empty,
   .stack,
   .group {
-    padding: 20px;
-    border-radius: 18px;
+    padding: 14px 16px;
+    border-radius: 16px;
+  }
+
+  .group--collapsed {
+    padding: 12px 14px;
+  }
+
+  .pin-lock {
+    right: 10px;
+    bottom: 10px;
   }
 }
