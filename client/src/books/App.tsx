@@ -23,7 +23,6 @@ export default function App() {
             Add stack
           </button>
         </div>
-        <p className="eyebrow">Reading journal</p>
         <h1>Book tracker</h1>
         <p className="masthead__lede">
           Keep separate stacks with their own finish dates. Add titles, log pages,
