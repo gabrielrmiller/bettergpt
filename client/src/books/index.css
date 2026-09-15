@@ -548,6 +548,12 @@ p {
   padding: 4px 8px 0;
 }
 
+.pin-lock__scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 39;
+}
+
 .pin-lock {
   position: fixed;
   right: 18px;

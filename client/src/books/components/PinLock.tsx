@@ -60,7 +60,15 @@ export function PinLock({ lock }: { lock: PinLockHandle }) {
   }
 
   return (
-    <div className="pin-lock" ref={rootRef}>
+    <>
+      {open ? (
+        <div
+          className="pin-lock__scrim"
+          aria-hidden="true"
+          onPointerDown={() => setOpen(false)}
+        />
+      ) : null}
+      <div className="pin-lock" ref={rootRef}>
       {open ? (
         <section className="pin-lock__panel" role="dialog" aria-label="Device key">
           <div className="pin-lock__head">
@@ -149,5 +157,6 @@ export function PinLock({ lock }: { lock: PinLockHandle }) {
         <span>{lock.linked ? 'Linked' : 'Key'}</span>
       </button>
     </div>
+    </>
   )
 }
