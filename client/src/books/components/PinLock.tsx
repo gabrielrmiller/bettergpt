@@ -6,13 +6,12 @@ type PinLockHandle = ReturnType<typeof usePinLock>
 export function PinLock({ lock }: { lock: PinLockHandle }) {
   const [open, setOpen] = useState(false)
   const [draft, setDraft] = useState(lock.pin)
-  const [focused, setFocused] = useState(false)
   const rootRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
-    if (!focused) setDraft(lock.pin)
-  }, [focused, lock.pin])
+    setDraft(lock.pin)
+  }, [lock.pin])
 
   useEffect(() => {
     if (!open) return
@@ -86,8 +85,6 @@ export function PinLock({ lock }: { lock: PinLockHandle }) {
                 maxLength={128}
                 value={draft}
                 disabled={lock.busy}
-                onFocus={() => setFocused(true)}
-                onBlur={() => setFocused(false)}
                 onChange={(event) => setDraft(event.target.value)}
               />
             </label>
