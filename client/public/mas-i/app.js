@@ -518,18 +518,20 @@
     let grand = 0;
     let session = 0;
 
+    // Session is shared across Study + Practice; all-time stays per category.
+    for (const id of CATEGORIES) {
+      grand += displayMs(state.accumulated[id], id, at);
+      session += displayMs(state.session[id], id, at);
+    }
+
     for (const id of CATEGORIES) {
       const totalMs = displayMs(state.accumulated[id], id, at);
-      const sessionMs = displayMs(state.session[id], id, at);
-      grand += totalMs;
-      session += sessionMs;
-
       const card = els.cards[id];
       const running = state.active === id;
       const focused = isFocusView(card);
 
-      setTime(card.querySelector("[data-display]"), focused ? sessionMs : totalMs);
-      setTime(card.querySelector("[data-all-time]"), focused ? totalMs : sessionMs);
+      setTime(card.querySelector("[data-display]"), focused ? session : totalMs);
+      setTime(card.querySelector("[data-all-time]"), focused ? totalMs : session);
       card.querySelector("[data-clock-label]").textContent = focused
         ? "This session"
         : "All time";
