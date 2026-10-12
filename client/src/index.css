@@ -195,8 +195,8 @@ button:focus-visible {
 .shell-sidebar {
   display: flex;
   flex-direction: column;
-  width: 260px;
-  flex: 0 0 260px;
+  width: 360px;
+  flex: 0 0 360px;
   background: #181818;
   border-right: 1px solid #303030;
   min-height: 0;
@@ -390,6 +390,14 @@ button:focus-visible {
   transition: color 300ms ease-in-out;
 }
 
+@media (min-width: 768px) {
+  .shell-sidebar:not(.is-collapsed) .nav-label {
+    flex: 1 1 auto;
+    min-width: 0;
+    white-space: normal;
+  }
+}
+
 .shell-main {
   display: flex;
   flex-direction: column;
@@ -519,6 +527,11 @@ button:focus-visible {
   .shell-sidebar.is-collapsed .shell-section,
   .shell-sidebar.is-collapsed .nav-item .nav-label {
     color: #212121;
+    white-space: nowrap;
+  }
+
+  .shell-sidebar.is-collapsed .nav-label {
+    flex: none;
   }
 
   .shell-sidebar.is-collapsed .shell-sidebar-top {
@@ -562,6 +575,12 @@ button:focus-visible {
 
   .shell-sidebar.is-open {
     transform: translateX(0);
+  }
+
+  .shell-sidebar .nav-label {
+    flex: 1 1 auto;
+    min-width: 0;
+    white-space: normal;
   }
 
   .shell-collapse {
