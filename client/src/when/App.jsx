@@ -159,6 +159,12 @@ export default function App() {
 
   return (
     <div className="page">
+      {showHomeLink && (
+        <a className="home-link" href="/" aria-label="Back to BetterGPT">
+          <span aria-hidden="true">←</span>
+          BetterGPT
+        </a>
+      )}
       <header className="hero">
         <p className="eyebrow">Day planner for the group</p>
         <div className="hero-row">
@@ -167,11 +173,6 @@ export default function App() {
             <p className="range">{rangeLabel(poll?.start, poll?.end)}</p>
           </div>
           <div className="hero-actions">
-            {showHomeLink && (
-              <a className="ghost" href="/">
-                Back to site
-              </a>
-            )}
             <button className="ghost" type="button" onClick={copyLink}>
               {copied ? "Link copied" : "Copy share link"}
             </button>
