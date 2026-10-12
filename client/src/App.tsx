@@ -13,23 +13,26 @@ const MESSAGE_BANK = [
 ]
 
 const PROJECTS = [
-  { label: "When we're free", href: '/when', icon: 'calendar' },
-  { label: 'MAS-I Timer', href: '/mas-i/', icon: 'timer' },
-  { label: 'Book tracker', href: '/books', icon: 'book' },
+  { label: "When we're free", href: '/when', icon: 'calendar', tone: 'calendar' },
+  { label: 'MAS-I Timer', href: '/mas-i/', icon: 'timer', tone: 'timer' },
+  { label: 'Book tracker', href: '/books', icon: 'book', tone: 'books' },
   {
     label: 'Medical AI Insurance Calculator',
     href: 'https://medical-ai-insurance-calculator.vercel.app',
     icon: 'calculator',
+    tone: 'insurance',
   },
   {
     label: 'Time Till Death',
     href: 'https://time-till-death.vercel.app',
     icon: 'hourglass',
+    tone: 'death',
   },
   {
     label: 'Pavi clone',
     href: 'https://gabrielrmiller.github.io/paviclone/',
     icon: 'person',
+    tone: 'pavi',
   },
 ] as const
 
@@ -231,7 +234,7 @@ function App() {
             {PROJECTS.map((project) => (
               <a
                 key={project.href}
-                className="nav-item"
+                className={`nav-item nav-tone-${project.tone}`}
                 href={project.href}
                 title={project.label}
                 onClick={() => setMobileOpen(false)}
@@ -276,9 +279,6 @@ function App() {
               placeholder={host.includes('github.io') ? 'go to "bettergpt-lake.vercel.app"' : 'Ask anything'}
             />
             <div className="composer-bar">
-              <div className="tooltip-wrapper" data-tooltip="Attach or add files">
-                <button type="button" className="chatbar-item text-5xl bigplus" aria-label="Attach or add files" />
-              </div>
               <div className="tooltip-wrapper" data-tooltip="Submit">
                 <button type="button" className="chatbar-item send-btn" aria-label="Submit" onClick={handleSubmit}>
                   ↑

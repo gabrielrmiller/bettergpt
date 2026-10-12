@@ -3,9 +3,6 @@
 @tailwind utilities;
 
 
-.bigplus:before {
-  content: '\FF0B';
-}
 .chatbar-item {
   display: flex;
   position: relative;
@@ -245,14 +242,19 @@ button:focus-visible {
 }
 
 .shell-brand {
-  flex: 1;
-  min-width: 0;
-  overflow: hidden;
+  flex: none;
+  color: #ececec;
   font-size: 15px;
   font-weight: 600;
   letter-spacing: -0.01em;
   white-space: nowrap;
-  transition: opacity 300ms ease-in-out;
+  user-select: none;
+  transition: color 300ms ease-in-out;
+}
+
+.shell-collapse,
+.shell-close {
+  margin-left: auto;
 }
 
 .shell-close {
@@ -266,49 +268,103 @@ button:focus-visible {
   flex-direction: column;
   gap: 8px;
   padding: 4px 8px 16px;
-  overflow: auto;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 .shell-group {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 8px;
 }
 
 .shell-section {
   margin: 4px 10px 4px;
-  overflow: hidden;
+  width: max-content;
   color: #9b9b9b;
   font-size: 12px;
   font-weight: 600;
   letter-spacing: 0.04em;
   text-transform: uppercase;
   white-space: nowrap;
-  transition: opacity 300ms ease-in-out;
+  user-select: none;
+  transition: color 300ms ease-in-out;
 }
 
 .nav-item {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   width: 100%;
-  min-height: 36px;
-  padding: 7px 10px;
+  min-height: 52px;
+  padding: 12px;
   border-radius: 8px;
   color: #ececec;
   text-align: left;
   text-decoration: none;
-  font-size: 14px;
-  font-weight: 500;
-  line-height: 1.3;
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1.15;
   cursor: pointer;
   transition: gap 300ms ease-in-out, padding 300ms ease-in-out;
+}
+
+.shell a.nav-item,
+.nav-item .nav-label {
+  font-weight: 700;
+}
+
+.nav-item.nav-tone-calendar,
+.nav-item.nav-tone-calendar:hover,
+.nav-item.nav-tone-calendar .nav-label,
+.nav-item.nav-tone-calendar .nav-icon {
+  color: #5cb3ff;
+}
+
+.nav-item.nav-tone-timer,
+.nav-item.nav-tone-timer:hover,
+.nav-item.nav-tone-timer .nav-label,
+.nav-item.nav-tone-timer .nav-icon {
+  color: #ffb020;
+}
+
+.nav-item.nav-tone-books,
+.nav-item.nav-tone-books:hover,
+.nav-item.nav-tone-books .nav-label,
+.nav-item.nav-tone-books .nav-icon {
+  color: #3ddc6e;
+}
+
+.nav-item.nav-tone-insurance,
+.nav-item.nav-tone-insurance:hover,
+.nav-item.nav-tone-insurance .nav-label,
+.nav-item.nav-tone-insurance .nav-icon {
+  color: #2ad4c4;
+}
+
+.nav-item.nav-tone-death,
+.nav-item.nav-tone-death:hover,
+.nav-item.nav-tone-death .nav-label,
+.nav-item.nav-tone-death .nav-icon {
+  color: #ff7a8a;
+}
+
+.nav-item.nav-tone-pavi,
+.nav-item.nav-tone-pavi:hover,
+.nav-item.nav-tone-pavi .nav-label,
+.nav-item.nav-tone-pavi .nav-icon {
+  color: #c084fc;
 }
 
 .nav-icon {
   width: 18px;
   height: 18px;
-  flex: 0 0 auto;
+  min-width: 18px;
+  min-height: 18px;
+  max-width: 18px;
+  max-height: 18px;
+  flex: none;
+  align-self: center;
   fill: none;
   stroke: currentColor;
   stroke-width: 1.75;
@@ -316,11 +372,22 @@ button:focus-visible {
   stroke-linejoin: round;
 }
 
+.nav-item .nav-icon {
+  width: 22px;
+  height: 22px;
+  min-width: 22px;
+  min-height: 22px;
+  max-width: 22px;
+  max-height: 22px;
+  flex: 0 0 22px;
+}
+
 .nav-label {
-  min-width: 0;
-  overflow: hidden;
-  transition: opacity 300ms ease-in-out, max-width 300ms ease-in-out;
-  max-width: 220px;
+  flex: none;
+  color: #ececec;
+  white-space: nowrap;
+  user-select: none;
+  transition: color 300ms ease-in-out;
 }
 
 .shell-main {
@@ -415,14 +482,9 @@ button:focus-visible {
 .composer-bar {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
   min-height: 52px;
   padding: 4px 8px 8px;
-}
-
-.shell .bigplus {
-  font-size: 22px;
-  line-height: 1;
 }
 
 .send-btn {
@@ -454,17 +516,13 @@ button:focus-visible {
 
   .shell-sidebar.is-collapsed .shell-brand,
   .shell-sidebar.is-collapsed .nav-label,
-  .shell-sidebar.is-collapsed .shell-section {
-    opacity: 0;
-  }
-
-  .shell-sidebar.is-collapsed .nav-label {
-    max-width: 0;
+  .shell-sidebar.is-collapsed .shell-section,
+  .shell-sidebar.is-collapsed .nav-item .nav-label {
+    color: #212121;
   }
 
   .shell-sidebar.is-collapsed .shell-sidebar-top {
-    justify-content: center;
-    padding-inline: 4px;
+    padding-inline: 6px;
   }
 
   .shell-sidebar.is-collapsed .shell-nav {
@@ -472,9 +530,9 @@ button:focus-visible {
   }
 
   .shell-sidebar.is-collapsed .nav-item {
-    justify-content: center;
-    gap: 0;
-    padding-inline: 0;
+    justify-content: flex-start;
+    padding-left: 9px;
+    padding-right: 0;
   }
 }
 
