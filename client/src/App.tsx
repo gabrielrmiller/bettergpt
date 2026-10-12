@@ -12,12 +12,6 @@ const MESSAGE_BANK = [
   "What's your next project?",
 ]
 
-const CHAT_ITEMS = [
-  { id: 'new', label: 'New chat', icon: 'new' },
-  { id: 'search', label: 'Search chats', icon: 'search' },
-  { id: 'library', label: 'Library', icon: 'library' },
-] as const
-
 const PROJECTS = [
   { label: "When we're free", href: '/when', icon: 'calendar' },
   { label: 'MAS-I Timer', href: '/mas-i/', icon: 'timer' },
@@ -32,6 +26,11 @@ const PROJECTS = [
     href: 'https://time-till-death.vercel.app',
     icon: 'hourglass',
   },
+  {
+    label: 'Pavi clone',
+    href: 'https://gabrielrmiller.github.io/paviclone/',
+    icon: 'person',
+  },
 ] as const
 
 function Icon({ name }: { name: string }) {
@@ -44,27 +43,6 @@ function Icon({ name }: { name: string }) {
 
 function iconPath(name: string): ReactNode {
   switch (name) {
-    case 'new':
-      return (
-        <>
-          <path d="M12 20h9" />
-          <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L8 18l-4 1 1-4Z" />
-        </>
-      )
-    case 'search':
-      return (
-        <>
-          <circle cx="11" cy="11" r="7" />
-          <path d="m20 20-3.5-3.5" />
-        </>
-      )
-    case 'library':
-      return (
-        <>
-          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
-          <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
-        </>
-      )
     case 'calendar':
       return (
         <>
@@ -91,6 +69,13 @@ function iconPath(name: string): ReactNode {
         <>
           <rect x="5" y="2" width="14" height="20" rx="2" />
           <path d="M8 6h8M8 11h.01M12 11h.01M16 11h.01M8 15h.01M12 15h.01M16 15h.01M8 19h.01M12 19h.01M16 19h.01" />
+        </>
+      )
+    case 'person':
+      return (
+        <>
+          <circle cx="12" cy="8" r="3.5" />
+          <path d="M5 19.5a7 7 0 0 1 14 0" />
         </>
       )
     default:
@@ -229,16 +214,7 @@ function App() {
           </button>
         </div>
 
-        <nav className="shell-nav" aria-label="BetterGPT">
-          <div className="shell-group">
-            {CHAT_ITEMS.map((item) => (
-              <button key={item.id} type="button" className="nav-item" title={item.label}>
-                <Icon name={item.icon} />
-                <span className="nav-label">{item.label}</span>
-              </button>
-            ))}
-          </div>
-
+        <nav className="shell-nav" aria-label="Projects">
           <div className="shell-group">
             <p className="shell-section">Projects</p>
             {PROJECTS.map((project) => (
