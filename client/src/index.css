@@ -388,9 +388,33 @@ button:focus-visible {
   min-width: max-content;
   max-width: none;
   color: #ececec;
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: normal;
   white-space: nowrap;
   user-select: none;
   transition: color 300ms ease-in-out;
+}
+
+.project-tooltip {
+  position: fixed;
+  z-index: 80;
+  max-width: 260px;
+  margin: 0;
+  padding: 6px 10px;
+  border: 1px solid #3a3a3a;
+  border-radius: 6px;
+  background: #1e1e1e;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.35;
+  letter-spacing: normal;
+  white-space: normal;
+  pointer-events: none;
+  user-select: none;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
 }
 
 .shell-main {

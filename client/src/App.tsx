@@ -1,5 +1,6 @@
 import './App.css'
-import { useEffect, useRef, useState, type ReactNode } from 'react'
+import { useEffect, useId, useLayoutEffect, useRef, useState, type ReactNode } from 'react'
+import { createPortal } from 'react-dom'
 
 const MESSAGE_BANK = [
   "What do you want to work on today?",
@@ -13,23 +14,44 @@ const MESSAGE_BANK = [
 ]
 
 const PROJECTS = [
-  { label: "When we're free", href: '/when', icon: 'calendar', tone: 'calendar' },
-  { label: 'MAS-I Timer', href: '/mas-i/', icon: 'timer', tone: 'timer' },
-  { label: 'Book tracker', href: '/books', icon: 'book', tone: 'books' },
+  {
+    label: "When we're free",
+    description: 'Tool for planning outings with friends and figuring out date availability',
+    href: '/when',
+    icon: 'calendar',
+    tone: 'calendar',
+  },
+  {
+    label: 'MAS-I Timer',
+    description: 'Timer to track hours spent studying and practicing for my actuarial exam',
+    href: '/mas-i/',
+    icon: 'timer',
+    tone: 'timer',
+  },
+  {
+    label: 'Book tracker',
+    description: 'Tool to track page count and time to complete books',
+    href: '/books',
+    icon: 'book',
+    tone: 'books',
+  },
   {
     label: 'Medical AI Insurance Calculator',
+    description: 'Model pricing tool for calculating value of premium for a health practitioner AI system',
     href: 'https://medical-ai-insurance-calculator.vercel.app',
     icon: 'calculator',
     tone: 'insurance',
   },
   {
     label: 'Time Till Death',
+    description: 'Lifespan calculator using exponential decay model',
     href: 'https://time-till-death.vercel.app',
     icon: 'hourglass',
     tone: 'death',
   },
   {
-    label: 'Pavi clone',
+    label: 'Pavi Clone',
+    description: "Replication of my friend's personal website, as an effort to learn how to code in HTML",
     href: 'https://gabrielrmiller.github.io/paviclone/',
     icon: 'person',
     tone: 'pavi',
@@ -89,6 +111,95 @@ function iconPath(name: string): ReactNode {
         </>
       )
   }
+}
+
+function placeProjectTooltip(anchor: HTMLElement, tip: HTMLElement) {
+  const sidebar = anchor.closest('.shell-sidebar')
+  const anchorRect = anchor.getBoundingClientRect()
+  const sideRect = sidebar?.getBoundingClientRect()
+  const visibleRight = sideRect ? Math.min(anchorRect.right, sideRect.right) : anchorRect.right
+  const height = tip.offsetHeight
+  const width = tip.offsetWidth
+  const margin = 8
+  let left = visibleRight + margin
+  let top = anchorRect.top + anchorRect.height / 2 - height / 2
+  if (left + width > window.innerWidth - margin) {
+    left = Math.max(margin, visibleRight - width - margin)
+  }
+  top = Math.max(margin, Math.min(top, window.innerHeight - height - margin))
+  tip.style.left = `${left}px`
+  tip.style.top = `${top}px`
+}
+
+function ProjectLink({
+  project,
+  onNavigate,
+}: {
+  project: (typeof PROJECTS)[number]
+  onNavigate: () => void
+}) {
+  const anchorRef = useRef<HTMLAnchorElement>(null)
+  const tipRef = useRef<HTMLDivElement>(null)
+  const [hovered, setHovered] = useState(false)
+  const [focused, setFocused] = useState(false)
+  const open = hovered || focused
+  const tipId = useId()
+
+  useLayoutEffect(() => {
+    if (!open) return
+    const anchor = anchorRef.current
+    const tip = tipRef.current
+    if (!anchor || !tip) return
+    placeProjectTooltip(anchor, tip)
+  }, [open, project.description])
+
+  useEffect(() => {
+    if (!open) return
+    let frame = 0
+    const tick = () => {
+      const anchor = anchorRef.current
+      const tip = tipRef.current
+      if (anchor && tip) placeProjectTooltip(anchor, tip)
+      frame = requestAnimationFrame(tick)
+    }
+    frame = requestAnimationFrame(tick)
+    return () => cancelAnimationFrame(frame)
+  }, [open])
+
+  return (
+    <a
+      ref={anchorRef}
+      className={`nav-item nav-tone-${project.tone}`}
+      href={project.href}
+      aria-describedby={open ? tipId : undefined}
+      onClick={onNavigate}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      onFocus={() => setFocused(true)}
+      onBlur={() => setFocused(false)}
+    >
+      <Icon name={project.icon} />
+      <span className="nav-label">
+        {project.label === 'Medical AI Insurance Calculator' ? (
+          <>
+            {'Medical AI Insurance '}
+            <br />
+            Calculator
+          </>
+        ) : (
+          project.label
+        )}
+      </span>
+      {open
+        ? createPortal(
+            <div ref={tipRef} id={tipId} className="project-tooltip" role="tooltip">
+              {project.description}
+            </div>,
+            document.body,
+          )
+        : null}
+    </a>
+  )
 }
 
 function App() {
@@ -232,26 +343,11 @@ function App() {
           <div className="shell-group">
             <p className="shell-section">Projects</p>
             {PROJECTS.map((project) => (
-              <a
+              <ProjectLink
                 key={project.href}
-                className={`nav-item nav-tone-${project.tone}`}
-                href={project.href}
-                title={project.label}
-                onClick={() => setMobileOpen(false)}
-              >
-                <Icon name={project.icon} />
-                <span className="nav-label">
-                  {project.label === 'Medical AI Insurance Calculator' ? (
-                    <>
-                      {'Medical AI Insurance '}
-                      <br />
-                      Calculator
-                    </>
-                  ) : (
-                    project.label
-                  )}
-                </span>
-              </a>
+                project={project}
+                onNavigate={() => setMobileOpen(false)}
+              />
             ))}
           </div>
         </nav>
