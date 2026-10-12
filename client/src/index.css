@@ -319,7 +319,6 @@ button:focus-visible {
 .nav-label {
   min-width: 0;
   overflow: hidden;
-  white-space: nowrap;
   transition: opacity 300ms ease-in-out, max-width 300ms ease-in-out;
   max-width: 220px;
 }
