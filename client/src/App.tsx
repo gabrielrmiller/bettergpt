@@ -95,6 +95,7 @@ function App() {
   const [isCollapsed, setIsCollapsed] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
   const [hovered, setHovered] = useState(false)
+  const [isDesktop, setIsDesktop] = useState(() => window.matchMedia('(min-width: 768px)').matches)
   const [text, setText] = useState('')
   const [currentMessageIndex, setCurrentMessageIndex] = useState(0)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
@@ -122,6 +123,13 @@ function App() {
       textarea.style.height = Math.min(textarea.scrollHeight, maxHeight) + 'px'
     }
   }, [text])
+
+  useEffect(() => {
+    const media = window.matchMedia('(min-width: 768px)')
+    const onChange = () => setIsDesktop(media.matches)
+    media.addEventListener('change', onChange)
+    return () => media.removeEventListener('change', onChange)
+  }, [])
 
   useEffect(() => {
     if (!mobileOpen) return
@@ -167,8 +175,9 @@ function App() {
     window.location.reload()
   }
 
+  const collapsedRail = isDesktop && isCollapsed
   const logoSrc =
-    isCollapsed && hovered
+    collapsedRail && hovered
       ? `${import.meta.env.BASE_URL}maximizer.png`
       : `${import.meta.env.BASE_URL}logo.png`
 
@@ -188,22 +197,24 @@ function App() {
           <button
             type="button"
             className="shell-logo"
-            aria-label={isCollapsed ? 'Expand sidebar' : 'Reload'}
+            aria-label={collapsedRail ? 'Expand sidebar' : 'Reload'}
             onMouseEnter={() => setHovered(true)}
             onMouseLeave={() => setHovered(false)}
-            onClick={isCollapsed ? toggleSidebar : handleRefresh}
+            onClick={collapsedRail ? toggleSidebar : handleRefresh}
           >
-            <img src={logoSrc} alt="" className={isCollapsed && hovered ? 'is-small' : ''} />
+            <img src={logoSrc} alt="" className={collapsedRail && hovered ? 'is-small' : ''} />
           </button>
           <span className="shell-brand">BetterGPT</span>
-          <button
-            type="button"
-            className="shell-icon-btn shell-collapse"
-            aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-            onClick={toggleSidebar}
-          >
-            <img src={`${import.meta.env.BASE_URL}${isCollapsed ? 'maximizer.png' : 'minimizer.png'}`} alt="" />
-          </button>
+          {collapsedRail ? null : (
+            <button
+              type="button"
+              className="shell-icon-btn shell-collapse"
+              aria-label="Collapse sidebar"
+              onClick={toggleSidebar}
+            >
+              <img src={`${import.meta.env.BASE_URL}minimizer.png`} alt="" />
+            </button>
+          )}
           <button
             type="button"
             className="shell-icon-btn shell-close"
