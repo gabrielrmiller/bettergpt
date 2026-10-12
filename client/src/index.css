@@ -242,14 +242,19 @@ button:focus-visible {
 }
 
 .shell-brand {
-  flex: 1;
-  min-width: 0;
-  overflow: hidden;
+  flex: none;
+  color: #ececec;
   font-size: 15px;
   font-weight: 600;
   letter-spacing: -0.01em;
   white-space: nowrap;
-  transition: opacity 300ms ease-in-out;
+  user-select: none;
+  transition: color 300ms ease-in-out;
+}
+
+.shell-collapse,
+.shell-close {
+  margin-left: auto;
 }
 
 .shell-close {
@@ -263,7 +268,8 @@ button:focus-visible {
   flex-direction: column;
   gap: 8px;
   padding: 4px 8px 16px;
-  overflow: auto;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 .shell-group {
@@ -274,14 +280,15 @@ button:focus-visible {
 
 .shell-section {
   margin: 4px 10px 4px;
-  overflow: hidden;
+  width: max-content;
   color: #9b9b9b;
   font-size: 12px;
   font-weight: 600;
   letter-spacing: 0.04em;
   text-transform: uppercase;
   white-space: nowrap;
-  transition: opacity 300ms ease-in-out;
+  user-select: none;
+  transition: color 300ms ease-in-out;
 }
 
 .nav-item {
@@ -305,7 +312,12 @@ button:focus-visible {
 .nav-icon {
   width: 18px;
   height: 18px;
-  flex: 0 0 auto;
+  min-width: 18px;
+  min-height: 18px;
+  max-width: 18px;
+  max-height: 18px;
+  flex: none;
+  align-self: center;
   fill: none;
   stroke: currentColor;
   stroke-width: 1.75;
@@ -314,10 +326,11 @@ button:focus-visible {
 }
 
 .nav-label {
-  min-width: 0;
-  overflow: hidden;
-  transition: opacity 300ms ease-in-out, max-width 300ms ease-in-out;
-  max-width: 220px;
+  flex: none;
+  color: #ececec;
+  white-space: nowrap;
+  user-select: none;
+  transition: color 300ms ease-in-out;
 }
 
 .shell-main {
@@ -447,11 +460,7 @@ button:focus-visible {
   .shell-sidebar.is-collapsed .shell-brand,
   .shell-sidebar.is-collapsed .nav-label,
   .shell-sidebar.is-collapsed .shell-section {
-    opacity: 0;
-  }
-
-  .shell-sidebar.is-collapsed .nav-label {
-    max-width: 0;
+    color: #212121;
   }
 
   .shell-sidebar.is-collapsed .shell-sidebar-top {
@@ -464,9 +473,9 @@ button:focus-visible {
   }
 
   .shell-sidebar.is-collapsed .nav-item {
-    justify-content: center;
-    gap: 0;
-    padding-inline: 0;
+    justify-content: flex-start;
+    padding-left: 11px;
+    padding-right: 0;
   }
 }
 
