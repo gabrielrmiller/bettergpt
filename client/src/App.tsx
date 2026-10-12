@@ -1,6 +1,5 @@
 import './App.css'
-import { useRef, useState, useEffect } from 'react'
-
+import { useEffect, useRef, useState, type ReactNode } from 'react'
 
 const MESSAGE_BANK = [
   "What do you want to work on today?",
@@ -11,131 +10,299 @@ const MESSAGE_BANK = [
   "What challenge are you facing?",
   "What would you like to learn about?",
   "What's your next project?",
-];
+]
+
+const CHAT_ITEMS = [
+  { id: 'new', label: 'New chat', icon: 'new' },
+  { id: 'search', label: 'Search chats', icon: 'search' },
+  { id: 'library', label: 'Library', icon: 'library' },
+] as const
+
+const PROJECTS = [
+  { label: "When we're free", href: '/when', icon: 'calendar' },
+  { label: 'MAS-I Timer', href: '/mas-i/', icon: 'timer' },
+  { label: 'Book tracker', href: '/books', icon: 'book' },
+  {
+    label: 'Medical AI Insurance Calculator',
+    href: 'https://medical-ai-insurance-calculator.vercel.app',
+    icon: 'calculator',
+  },
+  {
+    label: 'Time Till Death',
+    href: 'https://time-till-death.vercel.app',
+    icon: 'hourglass',
+  },
+] as const
+
+function Icon({ name }: { name: string }) {
+  return (
+    <svg className="nav-icon" viewBox="0 0 24 24" aria-hidden="true">
+      {iconPath(name)}
+    </svg>
+  )
+}
+
+function iconPath(name: string): ReactNode {
+  switch (name) {
+    case 'new':
+      return (
+        <>
+          <path d="M12 20h9" />
+          <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L8 18l-4 1 1-4Z" />
+        </>
+      )
+    case 'search':
+      return (
+        <>
+          <circle cx="11" cy="11" r="7" />
+          <path d="m20 20-3.5-3.5" />
+        </>
+      )
+    case 'library':
+      return (
+        <>
+          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+          <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+        </>
+      )
+    case 'calendar':
+      return (
+        <>
+          <rect x="3" y="5" width="18" height="16" rx="2" />
+          <path d="M3 10h18M8 3v4M16 3v4" />
+        </>
+      )
+    case 'timer':
+      return (
+        <>
+          <circle cx="12" cy="13" r="8" />
+          <path d="M12 13V9M9 2h6" />
+        </>
+      )
+    case 'book':
+      return (
+        <>
+          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+          <path d="M6.5 2H20v15H6.5A2.5 2.5 0 0 0 4 19.5V4.5A2.5 2.5 0 0 1 6.5 2z" />
+        </>
+      )
+    case 'calculator':
+      return (
+        <>
+          <rect x="5" y="2" width="14" height="20" rx="2" />
+          <path d="M8 6h8M8 11h.01M12 11h.01M16 11h.01M8 15h.01M12 15h.01M16 15h.01M8 19h.01M12 19h.01M16 19h.01" />
+        </>
+      )
+    default:
+      return (
+        <>
+          <path d="M8 2h8" />
+          <path d="M12 2v6l4 7a6 6 0 1 1-8 0l4-7" />
+        </>
+      )
+  }
+}
 
 function App() {
-  const host = window.location.host; 
-  const [reply, setReply] = useState(""); // chatgpt response
-  const [loading, setLoading] = useState(false); // is the response loading or not
-  const [isCollapsed, switchy] = useState(false); // Is sidebar collapsed or not
+  const host = window.location.host
+  const [reply, setReply] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [isCollapsed, setIsCollapsed] = useState(false)
+  const [mobileOpen, setMobileOpen] = useState(false)
+  const [hovered, setHovered] = useState(false)
+  const [text, setText] = useState('')
+  const [currentMessageIndex, setCurrentMessageIndex] = useState(0)
+  const textareaRef = useRef<HTMLTextAreaElement>(null)
+  const ran = useRef(false)
+
   const toggleSidebar = () => {
-    switchy(!isCollapsed);};
-  const [hovered, setHovered] =useState(false); // is the logo being hovered
-  const [text, setText] =useState(""); // text to submit to api
-  const [currentMessageIndex, setCurrentMessageIndex] = useState(0); // message index for greeting
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const ran =useRef(false); //only one message load on mount
-  
-  useEffect(() => {
-    if (ran.current) return;
-    ran.current = true;
-    const KEY = 'messageIndex';
-    const prev = Number(localStorage.getItem(KEY)) || 0;
-    const next = (prev + 1) % MESSAGE_BANK.length;
-    localStorage.setItem(KEY, next.toString());
-    setCurrentMessageIndex(next);
-  }, []);
+    setIsCollapsed((open) => !open)
+  }
 
   useEffect(() => {
-    const textarea = textareaRef.current;
-    const maxHeight = 300;
+    if (ran.current) return
+    ran.current = true
+    const KEY = 'messageIndex'
+    const prev = Number(localStorage.getItem(KEY)) || 0
+    const next = (prev + 1) % MESSAGE_BANK.length
+    localStorage.setItem(KEY, next.toString())
+    setCurrentMessageIndex(next)
+  }, [])
+
+  useEffect(() => {
+    const textarea = textareaRef.current
+    const maxHeight = 300
     if (textarea) {
-      textarea.style.height = "auto";
-      textarea.style.height = Math.min(textarea.scrollHeight, maxHeight) + "px";}
+      textarea.style.height = 'auto'
+      textarea.style.height = Math.min(textarea.scrollHeight, maxHeight) + 'px'
+    }
+  }, [text])
 
-  }, [text]);  
+  useEffect(() => {
+    if (!mobileOpen) return
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setMobileOpen(false)
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [mobileOpen])
+
   const handleSubmit = async () => {
-    if (!text.trim()) return; // Ignore empty input.
-    const userInput = text; // Save current text to a variable.
-    setText(""); // Clear textarea.
-    setLoading(true); // Set loading indicator for AI response.
+    if (!text.trim()) return
+    const userInput = text
+    setText('')
+    setLoading(true)
 
     try {
-      const res = await fetch("/api/chat", {
-        method: "POST", // POST request since we’re sending data.
-        headers: { "Content-Type": "application/json" }, // Tell server we’re sending JSON.
-        body: JSON.stringify({ input: userInput }), // Send user input to backend.
-      });
+      const res = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ input: userInput }),
+      })
 
-      const data = await res.json(); // Parse JSON response.
+      const data = await res.json()
       if (data.reply) {
-        setReply(data.reply); // Store AI response in state.
+        setReply(data.reply)
       }
     } catch (err) {
-      console.error("Error calling OpenAI API:", err); // Log any errors.
+      console.error('Error calling OpenAI API:', err)
     } finally {
-      setLoading(false); // Turn off loading indicator.
+      setLoading(false)
     }
-  };
+  }
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      handleSubmit();
+      e.preventDefault()
+      handleSubmit()
     }
-  };
+  }
+
   const handleRefresh = () => {
-    window.location.reload();
-  };
+    window.location.reload()
+  }
+
+  const logoSrc =
+    isCollapsed && hovered
+      ? `${import.meta.env.BASE_URL}maximizer.png`
+      : `${import.meta.env.BASE_URL}logo.png`
 
   return (
-    <div className='flex flex-row gap-0 w-full h-screen'>
-      <div className={`max-md:hidden shrink-0 relative text-start shadow-sm box-border transition-[bg, width] duration-300 ease-in-out 
-      after:border-r-[1px] after:content-[''] after:z-10 after:absolute after:pointer-events-none after:inset-0 after:border-sidebar-hover 
-      ${isCollapsed ? 'w-[52px] bg-main' : 'w-[260px] bg-sidebar-bg'} z-0`}>
-        <div className='flex mt-1 ml-1 justify-center items-center w-11 h-11 rounded-lg hover:bg-sidebar-hover' 
-        onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)} onClick={isCollapsed ? toggleSidebar : handleRefresh/* go to main menu*/}>
-          <img src={isCollapsed && hovered ? `${import.meta.env.BASE_URL}maximizer.png` : `${import.meta.env.BASE_URL}logo.png`} className={`${isCollapsed && hovered ? 'h-6 w-6' : 'h-10 w-10'}`}></img>
-        </div>
-        {isCollapsed ? null :
-        <div className={`z-10 fixed top-1.5 left-52 h-10 w-10 rounded-lg hover:bg-sidebar-hover`} onClick={toggleSidebar}>
-          {isCollapsed ? null :
-        <img src={`${import.meta.env.BASE_URL}minimizer.png`} className='block h-6 w-6 mx-auto my-2 object-contain'></img>}</div>}
-        <div className={` place-items-center transition-colors 0.2s ease-in-out grid grid-cols-1 ${isCollapsed ? 'text-main-bg' : 'text-white'}`}>
-          <div className={`rounded-lg p-2 ${isCollapsed ? 'w-[80%]' : 'w-[95%]'} h-10 hover:bg-sidebar-hover`}>
-            <span className={`left-4 text-xl before:mr-4 before:content-['🗒️'] fixed font-semibold text-[14px]`}>New chat</span>
-          </div>
-          <div className={`rounded-lg p-2 ${isCollapsed ? 'w-[80%]' : 'w-[95%]'} h-10 hover:bg-sidebar-hover`}>
-            <span className={`left-4 text-xl before:mr-4 before:content-['🔍'] fixed font-semibold text-[14px]`}>Search chats</span>
-          </div>
-          <div className={`rounded-lg p-2 ${isCollapsed ? 'w-[80%]' : 'w-[95%]'} h-10 hover:bg-sidebar-hover`}>
-            <span className={`left-4 text-xl before:mr-4 before:content-['📚'] fixed font-semibold text-[14px]`}>Library</span>
-          </div>
-          <a href="/when" className={`when-free-link rounded-lg p-2 ${isCollapsed ? 'w-[80%]' : 'w-[95%]'} h-10 hover:bg-sidebar-hover`}>
-            <span className={`left-4 text-xl before:mr-4 before:content-['📅'] fixed font-semibold text-[14px]`}>When we're free</span>
-          </a>
-          <a href="/mas-i/" className={`when-free-link rounded-lg p-2 ${isCollapsed ? 'w-[80%]' : 'w-[95%]'} h-10 hover:bg-sidebar-hover`}>
-            <span className={`left-4 text-xl before:mr-4 before:content-['⏱️'] fixed font-semibold text-[14px]`}>MAS-I Timer</span>
-          </a>
-          <a href="/books" className={`when-free-link rounded-lg p-2 ${isCollapsed ? 'w-[80%]' : 'w-[95%]'} h-10 hover:bg-sidebar-hover`}>
-            <span className={`left-4 text-xl before:mr-4 before:content-['📖'] fixed font-semibold text-[14px]`}>Book tracker</span>
-          </a>
-        </div>
-      </div>
-      <div className='flex flex-col flex-grow min-h-full bg-main-bg z-20 justify-center items-center gap-10 box-border'>
-        <div className='text-white text-xs w-[90%] relative p-2 m-0 select-text text-center'><h1>{MESSAGE_BANK[currentMessageIndex]}</h1></div>
-        <div className="flex gap-4 md:hidden">
-          <a className="when-free-link text-sm text-[#c5c5c5] hover:text-white font-semibold" href="/when">When we're free</a>
-          <a className="when-free-link text-sm text-[#c5c5c5] hover:text-white font-semibold" href="/mas-i/">MAS-I Timer</a>
-          <a className="when-free-link text-sm text-[#c5c5c5] hover:text-white font-semibold" href="/books">Book tracker</a>
-        </div>
-        {loading ? ( <p className='text-gray-300'>Thinking...</p>) : reply ? ( <div className='text-green-400 w-[90%] text-center'> <p>{reply}</p></div>) : null}
+    <div className="shell">
+      {mobileOpen ? (
+        <button
+          type="button"
+          className="shell-backdrop"
+          aria-label="Close menu"
+          onClick={() => setMobileOpen(false)}
+        />
+      ) : null}
 
-        <div className='items-start border-[#747474] border-[1px] flex flex-col w-[95%] relative h-auto bg-sidebar-hover rounded-3xl box-border shadow-xl max-w-2xl'>
-          <textarea ref={textareaRef} value={text} onChange={(e) => setText(e.target.value)} onKeyDown={handleKeyDown} className='outline-none overflow-y-auto w-full align-top 
-          text-left flex pt-[14px] overflow-hidden pl-[18px] pr-[14px] h-[62px] max-h-[92] box-border bg-transparent resize-none text-white placeholder:tracking-wider' 
-          placeholder={`${host.includes('github.io') ? 'go to "bettergpt-lake.vercel.app"' : "Ask anything"}`}></textarea>
-          <div className='border-t-[1px] border-[#747474] flex w-full relative min-h-[58px] box-border p-2 justify-between '>
-          
-          <div className="tooltip-wrapper" data-tooltip="Attach or add files"><button className='chatbar-item text-5xl bigplus'></button></div>
-          <div className="tooltip-wrapper" data-tooltip="Submit"><button className='chatbar-item text-3xl' onClick={handleSubmit}>⬆️</button></div>
+      <aside className={`shell-sidebar${isCollapsed ? ' is-collapsed' : ''}${mobileOpen ? ' is-open' : ''}`}>
+        <div className="shell-sidebar-top">
+          <button
+            type="button"
+            className="shell-logo"
+            aria-label={isCollapsed ? 'Expand sidebar' : 'Reload'}
+            onMouseEnter={() => setHovered(true)}
+            onMouseLeave={() => setHovered(false)}
+            onClick={isCollapsed ? toggleSidebar : handleRefresh}
+          >
+            <img src={logoSrc} alt="" className={isCollapsed && hovered ? 'is-small' : ''} />
+          </button>
+          <span className="shell-brand">BetterGPT</span>
+          <button
+            type="button"
+            className="shell-icon-btn shell-collapse"
+            aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+            onClick={toggleSidebar}
+          >
+            <img src={`${import.meta.env.BASE_URL}${isCollapsed ? 'maximizer.png' : 'minimizer.png'}`} alt="" />
+          </button>
+          <button
+            type="button"
+            className="shell-icon-btn shell-close"
+            aria-label="Close menu"
+            onClick={() => setMobileOpen(false)}
+          >
+            ×
+          </button>
+        </div>
 
+        <nav className="shell-nav" aria-label="BetterGPT">
+          <div className="shell-group">
+            {CHAT_ITEMS.map((item) => (
+              <button key={item.id} type="button" className="nav-item" title={item.label}>
+                <Icon name={item.icon} />
+                <span className="nav-label">{item.label}</span>
+              </button>
+            ))}
           </div>
-          </div>
-          
-      </div>
-      </div>)
 
+          <div className="shell-group">
+            <p className="shell-section">Projects</p>
+            {PROJECTS.map((project) => (
+              <a
+                key={project.href}
+                className="nav-item"
+                href={project.href}
+                title={project.label}
+                onClick={() => setMobileOpen(false)}
+              >
+                <Icon name={project.icon} />
+                <span className="nav-label">{project.label}</span>
+              </a>
+            ))}
+          </div>
+        </nav>
+      </aside>
+
+      <main className="shell-main">
+        <header className="shell-mobile-bar">
+          <button
+            type="button"
+            className="shell-icon-btn"
+            aria-label="Open menu"
+            onClick={() => setMobileOpen(true)}
+          >
+            <svg className="nav-icon" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M4 7h16M4 12h16M4 17h16" />
+            </svg>
+          </button>
+          <span>BetterGPT</span>
+        </header>
+
+        <div className="shell-stage">
+          <h1 className="shell-greeting">{MESSAGE_BANK[currentMessageIndex]}</h1>
+          {loading ? (
+            <p className="shell-status">Thinking...</p>
+          ) : reply ? (
+            <p className="shell-reply">{reply}</p>
+          ) : null}
+
+          <div className="composer">
+            <textarea
+              ref={textareaRef}
+              value={text}
+              onChange={(e) => setText(e.target.value)}
+              onKeyDown={handleKeyDown}
+              placeholder={host.includes('github.io') ? 'go to "bettergpt-lake.vercel.app"' : 'Ask anything'}
+            />
+            <div className="composer-bar">
+              <div className="tooltip-wrapper" data-tooltip="Attach or add files">
+                <button type="button" className="chatbar-item text-5xl bigplus" aria-label="Attach or add files" />
+              </div>
+              <div className="tooltip-wrapper" data-tooltip="Submit">
+                <button type="button" className="chatbar-item send-btn" aria-label="Submit" onClick={handleSubmit}>
+                  ↑
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  )
 }
 
 export default App
