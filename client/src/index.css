@@ -3,9 +3,6 @@
 @tailwind utilities;
 
 
-.bigplus:before {
-  content: '\FF0B';
-}
 .chatbar-item {
   display: flex;
   position: relative;
@@ -415,14 +412,9 @@ button:focus-visible {
 .composer-bar {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
   min-height: 52px;
   padding: 4px 8px 8px;
-}
-
-.shell .bigplus {
-  font-size: 22px;
-  line-height: 1;
 }
 
 .send-btn {
