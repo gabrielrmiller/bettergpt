@@ -39,9 +39,34 @@ input {
 }
 
 .page {
+  position: relative;
   width: min(1100px, calc(100% - 32px));
   margin: 0 auto;
-  padding: 36px 0 72px;
+  padding: 64px 0 72px;
+}
+
+.home-link {
+  position: absolute;
+  top: 16px;
+  left: 0;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 7px 12px 7px 8px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--card);
+  color: var(--moss-deep);
+  font-weight: 600;
+  font-size: 0.92rem;
+  line-height: 1;
+  text-decoration: none;
+  box-shadow: var(--shadow);
+}
+
+.home-link:hover {
+  color: var(--moss);
 }
 
 .hero {
