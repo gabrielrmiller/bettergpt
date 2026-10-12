@@ -240,7 +240,17 @@ function App() {
                 onClick={() => setMobileOpen(false)}
               >
                 <Icon name={project.icon} />
-                <span className="nav-label">{project.label}</span>
+                <span className="nav-label">
+                  {project.label === 'Medical AI Insurance Calculator' ? (
+                    <>
+                      {'Medical AI Insurance '}
+                      <br />
+                      Calculator
+                    </>
+                  ) : (
+                    project.label
+                  )}
+                </span>
               </a>
             ))}
           </div>
