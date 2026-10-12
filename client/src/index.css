@@ -309,33 +309,50 @@ button:focus-visible {
   transition: gap 300ms ease-in-out, padding 300ms ease-in-out;
 }
 
+.shell a.nav-item,
+.nav-item .nav-label {
+  font-weight: 700;
+}
+
 .nav-item.nav-tone-calendar,
-.nav-item.nav-tone-calendar .nav-label {
+.nav-item.nav-tone-calendar:hover,
+.nav-item.nav-tone-calendar .nav-label,
+.nav-item.nav-tone-calendar .nav-icon {
   color: #5cb3ff;
 }
 
 .nav-item.nav-tone-timer,
-.nav-item.nav-tone-timer .nav-label {
+.nav-item.nav-tone-timer:hover,
+.nav-item.nav-tone-timer .nav-label,
+.nav-item.nav-tone-timer .nav-icon {
   color: #ffb020;
 }
 
 .nav-item.nav-tone-books,
-.nav-item.nav-tone-books .nav-label {
+.nav-item.nav-tone-books:hover,
+.nav-item.nav-tone-books .nav-label,
+.nav-item.nav-tone-books .nav-icon {
   color: #3ddc6e;
 }
 
 .nav-item.nav-tone-insurance,
-.nav-item.nav-tone-insurance .nav-label {
+.nav-item.nav-tone-insurance:hover,
+.nav-item.nav-tone-insurance .nav-label,
+.nav-item.nav-tone-insurance .nav-icon {
   color: #2ad4c4;
 }
 
 .nav-item.nav-tone-death,
-.nav-item.nav-tone-death .nav-label {
+.nav-item.nav-tone-death:hover,
+.nav-item.nav-tone-death .nav-label,
+.nav-item.nav-tone-death .nav-icon {
   color: #ff7a8a;
 }
 
 .nav-item.nav-tone-pavi,
-.nav-item.nav-tone-pavi .nav-label {
+.nav-item.nav-tone-pavi:hover,
+.nav-item.nav-tone-pavi .nav-label,
+.nav-item.nav-tone-pavi .nav-icon {
   color: #c084fc;
 }
 
@@ -505,8 +522,7 @@ button:focus-visible {
   }
 
   .shell-sidebar.is-collapsed .shell-sidebar-top {
-    justify-content: center;
-    padding-inline: 4px;
+    padding-inline: 6px;
   }
 
   .shell-sidebar.is-collapsed .shell-nav {
