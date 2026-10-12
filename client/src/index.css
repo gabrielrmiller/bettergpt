@@ -184,7 +184,8 @@ button:focus-visible {
   padding: 0;
   background: transparent;
   color: inherit;
-  font: inherit;
+  font-family: inherit;
+  font-weight: inherit;
 }
 
 .shell button:hover,
@@ -409,10 +410,16 @@ button:focus-visible {
   padding: 4px 8px 8px;
 }
 
+.shell .bigplus {
+  font-size: 22px;
+  line-height: 1;
+}
+
 .send-btn {
   background: #fff;
   color: #111;
   font-size: 18px;
+  line-height: 1;
 }
 
 .send-btn:hover {
