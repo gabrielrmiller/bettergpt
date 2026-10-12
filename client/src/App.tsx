@@ -276,9 +276,6 @@ function App() {
               placeholder={host.includes('github.io') ? 'go to "bettergpt-lake.vercel.app"' : 'Ask anything'}
             />
             <div className="composer-bar">
-              <div className="tooltip-wrapper" data-tooltip="Attach or add files">
-                <button type="button" className="chatbar-item text-5xl bigplus" aria-label="Attach or add files" />
-              </div>
               <div className="tooltip-wrapper" data-tooltip="Submit">
                 <button type="button" className="chatbar-item send-btn" aria-label="Submit" onClick={handleSubmit}>
                   ↑
